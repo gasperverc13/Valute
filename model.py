@@ -16,11 +16,8 @@ class Model:
         else:
             self.moje_valute[valuta].append(self.kolicina)
 
-    def trenutna_vrednost(self):
+#    def trenutna_vrednost(self):
 
-
-    def vrednost_valute(self):
-        self.vrednost = self.kolicina * 
 
 class Valuta:
     def __init__(self, kratica):
@@ -33,11 +30,14 @@ class Valuta:
     def vrednosti(self):
         self.vrednosti = []
 
-    def skupna_vrednost(self):
-        self.skupna_vrednost = 
+   # def skupna_vrednost(self):
+    #    self.skupna_vrednost = 
 
     def prodaj_vse(self):
         self.kupljeno = None
+
+ #   def trenutna_vrednost(self):
+
 
 class Transakcija:
     def __init__(self, kratica, kolicina, limit=None, stop=None):
