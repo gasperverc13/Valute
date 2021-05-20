@@ -3,18 +3,22 @@ import json
 import datetime as dt
 
 
-class Model:
+class Pregled:
     def __init__(self):
-        self.moje_valute = {}
+        self.moje_valute = []
+        self.trenutna_valuta = None
 
     def kolicina_valute(self, kolicina=None):
         self.kolicina = kolicina
 
     def dodaj_valuto(self, valuta):
         if valuta not in self.moje_valute:
-            self.moje_valute[valuta] = (self.kolicina)
-        else:
-            self.moje_valute[valuta] += (self.kolicina)
+            self.moje_valute.append(valuta)
+        if not self.trenutna_valuta:
+            self.trenutna_valuta = valuta
+
+    def zamenjaj_valuto(self, valuta):
+        self.trenutna_valuta = valuta
 
     def skupaj(self, valuta):
         pass
@@ -22,6 +26,8 @@ class Model:
     def total(self):
         pass
 
+    def prodaj_vse(self, valuta):
+        self.moje_valute.remove(valuta)
 
 class Valuta:
     def __init__(self, kratica):
@@ -61,7 +67,7 @@ class Transakcija:
     def cas_zdaj(self):
         t = dt.datetime.now()
         s = t.strftime('%Y-%m-%d %H:%M:%S.%f')
-        self.cas = s[:-7]
+        self.cas = s[:-10]
 
     def zdruzi(self):
         return {
