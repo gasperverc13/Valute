@@ -7,36 +7,38 @@ class Model:
     def __init__(self):
         self.moje_valute = {}
 
-    def kolicina_valute(self, kolicina):
+    def kolicina_valute(self, kolicina=None):
         self.kolicina = kolicina
-    
+
     def dodaj_valuto(self, valuta):
         if valuta not in self.moje_valute:
             self.moje_valute[valuta] = (self.kolicina)
         else:
-            self.moje_valute[valuta].append(self.kolicina)
+            self.moje_valute[valuta] += (self.kolicina)
 
-#    def trenutna_vrednost(self):
+    def skupaj(self, valuta):
+        pass
+
+    def total(self):
+        pass
 
 
 class Valuta:
     def __init__(self, kratica):
         self.kratica = kratica
-        self.kupljeno = ()
-    
-    def dodaj_nakup(self, kolicina):
-        self.kupljeno += kolicina
-
-    def vrednosti(self):
+        self.kupljeno = []
         self.vrednosti = []
 
-   # def skupna_vrednost(self):
-    #    self.skupna_vrednost = 
+    def dodaj_nakup(self, kolicina):
+        self.kupljeno += kolicina
+        self.vrednosti += self.vrednost_valute()
+
+    def skupna_vrednost(self):
+        self.skupna_vrednost = (sum(self.kupljeno[i] * self.vrednosti[i] for i in range(
+            len(self.kupljeno))) - self.vrednost_valute() * sum(self.kupljeno))
 
     def prodaj_vse(self):
         self.kupljeno = None
-
- #   def trenutna_vrednost(self):
 
 
 class Transakcija:
@@ -46,14 +48,16 @@ class Transakcija:
         self.limit = limit
         self.stop = stop
 
-    def vrednost_valute(self):
-        kazalec = yf.Ticker(self.kratica)
+    @staticmethod
+    def vrednost_valute(kratica):
+        kratica_x = ''.join(kratica.split('/'))
+        kazalec = yf.Ticker(f'{kratica_x}=X')
         podatki = kazalec.history(period='1d')
-        self.trenutna_vrednost = podatki['Close'][0]
+        return podatki['Close'][0]
 
     def vrednost(self):
-        self.vrednost = self.kolicina *  self.trenutna_vrednost
-    
+        self.vrednost = self.kolicina * self.trenutna_vrednost
+
     def cas_zdaj(self):
         t = dt.datetime.now()
         s = t.strftime('%Y-%m-%d %H:%M:%S.%f')
