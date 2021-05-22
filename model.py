@@ -23,11 +23,11 @@ class Model:
     def kupi_vec(self, kolicina):
         self.trenutna_valuta.dodaj_nakup(kolicina)
 
-    def skupaj(self, valuta):
-        pass
+    # def skupaj(self, valuta):
+    #    pass
 
     def total(self):
-        pass
+        return sum([valuta.skupna_vrednost() for valuta in self.moje_valute])
 
     def prodaj_vse(self, valuta):
         self.moje_valute.remove(valuta)
@@ -48,11 +48,11 @@ class Valuta:
 
     def dodaj_nakup(self, kolicina):
         self.kupljeno += kolicina
-        self.vrednosti += self.vrednost_valute()
+        self.vrednosti += Transakcija.trenutna_cena_valute(self.kratica)
 
     def skupna_vrednost(self):
-        self.skupna_vrednost = (sum(self.kupljeno[i] * self.vrednosti[i] for i in range(
-            len(self.kupljeno))) - self.vrednost_valute() * sum(self.kupljeno))
+        return (sum(self.kupljeno[i] * self.vrednosti[i] for i in range(
+            len(self.kupljeno))) - Transakcija.trenutna_cena_valute(self.kratica) * sum(self.kupljeno))
 
     def prodaj_vse(self):
         self.kupljeno = None
@@ -65,36 +65,61 @@ class Valuta:
 
         }
 
+    @staticmethod
+    def iz_slovarja(slovar):
+        valuta = Valuta(slovar['kratica'])
+        valuta.kolicina = [
+            Transakcija.iz_slovarja(s_kolicina) for s_kolicina in slovar['kolicina']
+        ]
+        valuta.vrednost = [
+            Transakcija.iz_slovarja(s_vrednost) for s_vrednost in slovar['vrednosti']
+        ]
+        return valuta
+
 
 class Transakcija:
     def __init__(self, kratica, kolicina, limit=None, stop=None):
-        self.kratica = kratica
         self.kolicina_delna = kolicina
         self.limit = limit
         self.stop = stop
+        self.kratica = kratica
 
-    def vrednost_valute(self):
-        kratica_x = ''.join(self.kratica.split('/'))
+    @staticmethod
+    def trenutna_cena_valute(kratica):
+        kratica_x = ''.join(kratica.split('/'))
+        # moral boš še naredit, da vmesnik pretvori vse kratice v obliko "ABC/DEF"
         kazalec = yf.Ticker(f'{kratica_x}=X')
         podatki = kazalec.history(period='1d')
-        self.treutna_vrednost = podatki['Close'][0]
+        return podatki['Close'][0]
 
     def vrednost(self):
-        self.vrednost = self.kolicina_delna * self.trenutna_vrednost
+        return self.kolicina_delna * Transakcija.trenutna_cena_valute(self.kratica)
+
+    def prodaj(self):
+        self.kolicina_delna = None
 
     def cas_zdaj(self):
         t = dt.datetime.now()
         s = t.strftime('%Y-%m-%d %H:%M:%S.%f')
-        self.cas = s[:-10]
+        return s[:-10]
 
-    def zdruzi(self):
+    def v_slovar(self):
         return {
+            'kratica': self.kratica,
             'kolicina': self.kolicina_delna,
-            'vrednost': self.vrednost,
+            'vrednost': self.vrednost(),
             'limit': self.limit,
             'stop': self.stop,
-            'cas': self.cas,
+            'cas': self.cas_zdaj(),
         }
 
-    def prodaj(self):
-        self.kolicina_delna = None
+    @staticmethod
+    def iz_slovarja(slovar):
+        return Transakcija(
+            slovar['kratica'],
+            slovar['kolicina'],
+            slovar['vrednost'],
+            slovar['limit'],
+            slovar['stop'],
+            slovar['cas'],
+        )
