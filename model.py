@@ -39,6 +39,37 @@ class Model:
 
         }
 
+    @staticmethod
+    def iz_slovarja(slovar):
+        portfelj = Model()
+        portfelj.moje_valute = [
+            Valuta.iz_slovarja(s_valuta) for s_valuta in slovar['moje_valute']
+        ]
+        if slovar['trenutna_valuta'] is not None:
+            portfelj.trenutna_valuta = portfelj.moje_valute[slovar['trenutna_valuta']]
+        return portfelj
+
+    def shrani_v_datoteko(self, ime_dat):
+        with open(ime_dat, 'w', encoding='utf-8') as dat:
+            slovar = self.v_slovar()
+            json.dump(slovar, dat)
+
+    @staticmethod
+    def preberi_iz_datoteke(ime_dat):
+        with open(ime_dat, 'r', encoding='utf-8') as dat:
+            slovar = json.load(dat)
+            return Model.iz_slovarja(slovar)
+
+    # def preveri_podatke_novega_spiska(self, kratica):
+    #    napake = {}
+    #    if not kratica:
+    #        napake["kratica"] = "Ime mora biti neprazno."
+    #    for valuta in self.spiski:
+    #        if valuta.kratica == kratica:
+    #            napake["kratica"] = "Kratica je že zasedena."
+    #    return napake
+    # ta del najverjetneje ne bo uporaben
+
 
 class Valuta:
     def __init__(self, kratica):
