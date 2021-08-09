@@ -9,9 +9,9 @@ def nalozi_portfelj():
     uporabnisko_ime = bottle.request.get_cookie("uporabnisko_ime")
     if uporabnisko_ime:
         try:
-            portfelj = poskus.Model.preberi_iz_datoteke(uporabnisko_ime)
+            portfelj = poskus.Portfelj.preberi_iz_datoteke(uporabnisko_ime)
         except FileNotFoundError:
-            portfelj = poskus.Model()
+            portfelj = poskus.Portfelj()
         return portfelj
     else:
         bottle.redirect("/prijava/")
@@ -24,7 +24,12 @@ def shrani_portfelj(portfelj):
 @bottle.get("/")
 def zacetna_stran():
     portfelj = nalozi_portfelj()
-    return bottle.template("zacetna.html")
+    return bottle.template(
+        "zacetna.html",
+        uporabnisko_ime=bottle.request.get_cookie("uporabnisko_ime"),
+        trenutna_valuta=portfelj.trenutna_valuta,
+        valute=portfelj.moje_valute,
+    )
 
 @bottle.get("/registracija/")
 def registracija_get():
@@ -39,7 +44,7 @@ def registracija_post():
         return bottle.template("registracija.html", napake=napake, polja={"uporabnisko_ime": uporabnisko_ime}, uporabnisko_ime=None)
     else:
         bottle.response.set_cookie("uporabnisko_ime", uporabnisko_ime, path="/")
-        poskus.Model().shrani_v_datoteko(uporabnisko_ime)
+        poskus.Portfelj().shrani_v_datoteko(uporabnisko_ime)
         bottle.redirect("/")
 
 @bottle.get("/prijava/")
@@ -95,7 +100,7 @@ def dodaj_valuto_post():
     #if napake:
     #    return bottle.template("dodaj_spisek.html", napake=napake, polja=polja)
     #else:
-    valuta = poskus.Model(kratica)
+    valuta = poskus.Portfelj(kratica)
     portfelj.dodaj_valuto(valuta)
     shrani_portfelj(portfelj)
     bottle.redirect("/")

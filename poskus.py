@@ -34,7 +34,7 @@ class Portfelj:
 
     @staticmethod
     def iz_slovarja(slovar):
-        portfelj = Model()
+        portfelj = Portfelj()
         portfelj.moje_valute = [
             Valuta.iz_slovarja(s_valuta) for s_valuta in slovar['moje_valute']
         ]
@@ -51,7 +51,7 @@ class Portfelj:
     def preberi_iz_datoteke(ime_dat):
         with open(ime_dat, 'r', encoding='utf-8') as dat:
             slovar = json.load(dat)
-            return Model.iz_slovarja(slovar)
+            return Portfelj.iz_slovarja(slovar)
 
     # def preveri_podatke_novega_spiska(self, kratica):
     #    napake = {}
