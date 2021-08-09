@@ -8,11 +8,7 @@ import datetime
 def nalozi_portfelj():
     uporabnisko_ime = bottle.request.get_cookie("uporabnisko_ime")
     if uporabnisko_ime:
-        try:
-            portfelj = poskus.Portfelj.preberi_iz_datoteke(uporabnisko_ime)
-        except FileNotFoundError:
-            portfelj = poskus.Portfelj()
-        return portfelj
+            return poskus.Portfelj.preberi_iz_datoteke(uporabnisko_ime)
     else:
         bottle.redirect("/prijava/")
 
