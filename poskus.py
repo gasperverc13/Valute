@@ -36,7 +36,7 @@ class Portfelj:
     def iz_slovarja(slovar):
         portfelj = Portfelj()
         portfelj.moje_valute = [
-            Valuta.iz_slovarja(s_valuta) for s_valuta in slovar['moje_valute']
+            Valuta.iz_slovarja(sl_valuta) for sl_valuta in slovar['moje_valute']
         ]
         if slovar['trenutna_valuta'] is not None:
             portfelj.trenutna_valuta = portfelj.moje_valute[slovar['trenutna_valuta']]
@@ -53,14 +53,14 @@ class Portfelj:
             slovar = json.load(dat)
             return Portfelj.iz_slovarja(slovar)
 
-    # def preveri_podatke_novega_spiska(self, kratica):
-    #    napake = {}
-    #    if not kratica:
-    #        napake['kratica'] = 'Ime mora biti neprazno.'
-    #    for valuta in self.spiski:
-    #        if valuta.kratica == kratica:
-    #            napake['kratica'] = 'Kratica je že zasedena.'
-    #    return napake
+    def preveri_podatke_novega_spiska(self, kratica):
+        napake = {}
+        if not kratica:
+            napake['kratica'] = 'Ime mora biti neprazno.'
+        #for valuta in self.spiski:
+        #    if valuta.kratica == kratica:
+        #        napake['kratica'] = 'Kratica je že zasedena.'
+        return napake
     # ta del najverjetneje ne bo uporaben
 
 
@@ -94,13 +94,13 @@ class Nakup:
     def __init__(self, kolicina_delna):
         self.kolicina_delna = kolicina_delna
 
-    # @staticmethod
-    # def trenutna_cena_valute(kratica):
-    #    kratica_x = ''.join(kratica.split('/'))
-    #    # moral boš še naredit, da vmesnik pretvori vse kratice v obliko 'ABC/DEF'
-    #    kazalec = yf.Ticker(f'{kratica_x}=X')
-    #    podatki = kazalec.history(period='1d')
-    #    return podatki['Close'][0]
+    @staticmethod
+    def trenutna_cena_valute(kratica):
+       kratica_x = ''.join(kratica.split('/'))
+       # moral boš še naredit, da vmesnik pretvori vse kratice v obliko 'ABC/DEF'
+       kazalec = yf.Ticker(f'{kratica_x}=X')
+       podatki = kazalec.history(period='1d')
+       return podatki['Close'][0]
 
     def prodaj(self):
         self.kolicina_delna = None

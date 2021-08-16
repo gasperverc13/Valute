@@ -60,15 +60,15 @@ class Portfelj:
             slovar = json.load(dat)
             return Portfelj.iz_slovarja(slovar)
 
-    # def preveri_podatke_novega_spiska(self, kratica):
-    #    napake = {}
-    #    if not kratica:
-    #        napake['kratica'] = 'Ime mora biti neprazno.'
-    #    for valuta in self.spiski:
-    #        if valuta.kratica == kratica:
-    #            napake['kratica'] = 'Kratica je že zasedena.'
-    #    return napake
-    # ta del najverjetneje ne bo uporaben
+    def preveri_podatke_novega_vnosa(self, kratica):
+        napake = {}
+        if not kratica:
+            napake['kratica'] = 'Ime mora biti neprazno.'
+        #for valuta in self.spiski:
+        #    if valuta.kratica == kratica:
+        #        napake['kratica'] = 'Kratica je že zasedena.'
+        return napake
+     #ta del najverjetneje ne bo uporaben
 
 
 class Valuta:
