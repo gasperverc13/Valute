@@ -1,17 +1,17 @@
 % rebase('base.html')
 <!-- Main container -->
-<nav class="level">
-    <div class="level-left">
-        <form method="POST" action="/zamenjaj-trenutno-valuto/">
-            <div class="buttons has-addons field is-horizontal">
+<nav class='level'>
+    <div class='level-left'>
+        <form method='POST' action='/zamenjaj-trenutno-valuto/'>
+            <div class='buttons has-addons field is-horizontal'>
                 % for indeks, valuta in enumerate(moje_valute):
                 % if valuta == trenutna_valuta:
-                <button class="button is-primary is-selected" name="indeks" value="{{indeks}}">
+                <button class='button is-primary is-selected' name='indeks' value='{{indeks}}'>
                     {{valuta.kratica}}
         
                 </button>
                 % else:
-                <button class="button" name="indeks" value="{{indeks}}">
+                <button class='button' name='indeks' value='{{indeks}}'>
                     {{valuta.kratica}}
                     
                 </button>
@@ -22,14 +22,14 @@
 
     </div>
 
-    <div class="level-right">
-        <!-- <div class="level-item">
-            <p class="subtitle is-5">
+    <div class='level-right'>
+        <!-- <div class='level-item'>
+            <p class='subtitle is-5'>
                 <strong>123</strong> posts
             </p>
         </div> -->
-        <div class="level-item">
-            <a class="button is-info" href="/dodaj-valuto/">dodaj valuto</a>
+        <div class='level-item'>
+            <a class='button is-info' href='/dodaj-valuto/'>dodaj valuto</a>
         </div>
         </form>
     </div>
@@ -37,38 +37,38 @@
 
 % if trenutna_valuta:
 
-<table class="table is-hoverable is-fullwidth">
+<table class='table is-hoverable is-fullwidth'>
     <thead>
         <tr>
-            <form method="POST" action="/dodaj/">
+            <form method='POST' action='/dodaj/'>
                 <td></td>
                 <td>
-                    <div class="control has-icons-left">
-                        <input class="input is-small" type="text" name="kratica" placeholder="kratica">
-                        <span class="icon is-small is-left">
-                            <i class="far fa-clipboard-check"></i>
+                    <div class='control has-icons-left'>
+                        <input class='input is-small' type='text' name='kratica' placeholder='kratica'>
+                        <span class='icon is-small is-left'>
+                            <i class='far fa-usd-circle'></i>
                         </span>
                     </div>
                 </td>
                 <!--<td>
-                    <div class="control has-icons-left">
-                        <input class="input is-small" type="text" name="datum" placeholder="rok">
-                        <span class="icon is-small is-left">
-                            <i class="far fa-calendar-alt"></i>
+                    <div class='control has-icons-left'>
+                        <input class='input is-small' type='text' name='datum' placeholder='rok'>
+                        <span class='icon is-small is-left'>
+                            <i class='far fa-calendar-alt'></i>
                         </span>
                     </div>
                 </td>-->
                 <td>
-                    <div class="control has-icons-left">
-                        <input class="input is-small" type="text" name="kolicina" placeholder="količina">
-                        <span class="icon is-small is-left">
-                            <i class="far fa-sticky-note"></i>
+                    <div class='control has-icons-left'>
+                        <input class='input is-small' type='text' name='kolicina' placeholder='količina'>
+                        <span class='icon is-small is-left'>
+                            <i class='far fa-sticky-note'></i>
                         </span>
                     </div>
                 </td>
                 <td>
-                    <div class="control">
-                        <button class="button is-info is-small">dodaj</button>
+                    <div class='control'>
+                        <button class='button is-info is-small'>dodaj</button>
                     </div>
                 </td>
             </form>
@@ -78,14 +78,14 @@
         % for indeks, nakup in enumerate(kupljeno):
         <tr>
             <td>
-                <form method="POST" action="/prodaj-valuto/">
-                    <input type="hidden" name="indeks" value="{{indeks}}">
-                    <button class="button is-white">
-                        <span class="icon is-small">
-                            % if nakup.prodaj != None:
-                            <i class="far fa-check-square"></i>
+                <form method='POST' action='/prodaj-valuto/'>
+                    <input type='hidden' name='indeks' value='{{indeks}}'>
+                    <button class='button is-white'>
+                        <span class='icon is-small'>
+                            % if nakup.kolicina_delna == None:
+                            <i class='far fa-check-square'></i>
                             % else:
-                            <i class="far fa-square"></i>
+                            <i class='far fa-usd-circle'></i>
                             % end
                         </span>
                     </button>
@@ -101,4 +101,4 @@
 
 % else:
 
-<p>Nimate še nobene valute. <a href="/dodaj-valuto/">Dodajte jo!</a></p>
+<p>Nimate še nobene valute. <a href='/dodaj-valuto/'>Dodajte jo!</a></p>

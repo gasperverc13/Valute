@@ -56,10 +56,10 @@ class Portfelj:
     # def preveri_podatke_novega_spiska(self, kratica):
     #    napake = {}
     #    if not kratica:
-    #        napake["kratica"] = "Ime mora biti neprazno."
+    #        napake['kratica'] = 'Ime mora biti neprazno.'
     #    for valuta in self.spiski:
     #        if valuta.kratica == kratica:
-    #            napake["kratica"] = "Kratica je že zasedena."
+    #            napake['kratica'] = 'Kratica je že zasedena.'
     #    return napake
     # ta del najverjetneje ne bo uporaben
 
@@ -94,23 +94,24 @@ class Nakup:
     def __init__(self, kolicina_delna):
         self.kolicina_delna = kolicina_delna
 
-    #@staticmethod
-    #def trenutna_cena_valute(kratica):
+    # @staticmethod
+    # def trenutna_cena_valute(kratica):
     #    kratica_x = ''.join(kratica.split('/'))
-    #    # moral boš še naredit, da vmesnik pretvori vse kratice v obliko "ABC/DEF"
+    #    # moral boš še naredit, da vmesnik pretvori vse kratice v obliko 'ABC/DEF'
     #    kazalec = yf.Ticker(f'{kratica_x}=X')
     #    podatki = kazalec.history(period='1d')
     #    return podatki['Close'][0]
 
     def prodaj(self):
         self.kolicina_delna = None
-    #ugotovi, ali je treba 'cas_zdaj', 'trenutna_cena_valute? in 'vrednost' premakniti v drug class
+    # ugotovi, ali je treba 'cas_zdaj', 'trenutna_cena_valute? in 'vrednost' premakniti v drug class
 
     def v_slovar(self):
         return {
             'kolicina': self.kolicina_delna,
         }
     # vrednost in cas nista zahtevana v init, ugotovi ali je to problem
+
     @staticmethod
     def iz_slovarja(slovar):
         return Nakup(

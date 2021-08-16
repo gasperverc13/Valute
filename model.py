@@ -63,10 +63,10 @@ class Portfelj:
     # def preveri_podatke_novega_spiska(self, kratica):
     #    napake = {}
     #    if not kratica:
-    #        napake["kratica"] = "Ime mora biti neprazno."
+    #        napake['kratica'] = 'Ime mora biti neprazno.'
     #    for valuta in self.spiski:
     #        if valuta.kratica == kratica:
-    #            napake["kratica"] = "Kratica je že zasedena."
+    #            napake['kratica'] = 'Kratica je že zasedena.'
     #    return napake
     # ta del najverjetneje ne bo uporaben
 
@@ -120,7 +120,7 @@ class Nakup:
     @staticmethod
     def trenutna_cena_valute(kratica):
         kratica_x = ''.join(kratica.split('/'))
-        # moral boš še naredit, da vmesnik pretvori vse kratice v obliko "ABC/DEF"
+        # moral boš še naredit, da vmesnik pretvori vse kratice v obliko 'ABC/DEF'
         kazalec = yf.Ticker(f'{kratica_x}=X')
         podatki = kazalec.history(period='1d')
         return podatki['Close'][0]
