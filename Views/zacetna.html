@@ -2,6 +2,32 @@
 <!-- Main container -->
 <nav class='level'>
     <div class='level-left'>
+        <form method='POST' action='/zamenjaj-trenutno-valuto/'>
+            <div class='buttons has-addons field is-horizontal'>
+                % for indeks, valuta in enumerate(moje_valute):
+                % if valuta == trenutna_valuta:
+                <button class='button is-primary is-selected' name='indeks' value='{{indeks}}'>
+                    {{valuta.kratica}}
+                                     
+                </button>
+                <form method='POST' action='/prodaj-valuto/'>
+                    <input type='hidden' name='indeks' value='{{indeks}}'>
+                    <button class="button is-black">
+                        <i class="fas fa-minus-circle"></i>
+                    </button>
+                </form>   
+                % else:
+                <button class='button' name='indeks' value='{{indeks}}'>
+                    {{valuta.kratica}}
+
+                </button>
+                % end
+                % end
+            </div>
+        </form>
+
+    </div>
+    <div class='level-right'>
         <div class='level-item'>
             <a class='button is-info' href='/dodaj-valuto/'>dodaj valuto</a>
         </div>
@@ -16,6 +42,7 @@
         <tr>
             <form method='POST' action='/dodaj/'>
                 <td></td>
+
                 <!--<td>
                     <div class='control has-icons-left'>
                         <input class='input is-small' type='text' name='kratica' placeholder='kratica'>
@@ -67,8 +94,15 @@
     <tbody>
         % for indeks, nakup in enumerate(kupljeno):
         <tr>
-            <td>
-                <form method='POST' action='/prodaj-valuto/'>
+            <!--<td>{{ valuta.datum }}</td>-->
+            <td>{{ nakup.kolicina_delna }}</td>
+            <!--<td>{{ valuta.kupna_cena }}</td>
+            <td>{{ valuta.trenutna_cena }}</td>
+            <td>{{ valuta.stop }}</td>
+            <td>{{ valuta.limit }}</td>
+            <td>{{ valuta.razlika }}</td>-->
+            <!--<td>
+                <form method='POST' action='/prodaj/'>
                     <input type='hidden' name='indeks' value='{{indeks}}'>
                     <button class='button is-white'>
                         <span class='icon is-small'>
@@ -80,9 +114,7 @@
                         </span>
                     </button>
                 </form>
-            </td>
-            <td>{{ valuta.kratica }}</td>
-            <td>{{ valuta.kolicina }}</td>
+            </td>-->
             <td></td>
         </tr>
         % end

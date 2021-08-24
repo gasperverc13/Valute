@@ -69,13 +69,23 @@ def odjava():
 
 @bottle.post('/dodaj/')
 def dodaj():
-    #kratica = bottle.request.forms.getunicode('kratica')
-    kolicina = bottle.request.forms.getunicode('kolicina')
+    kratica = bottle.request.forms.getunicode('kratica')
+    kolicina_delna = bottle.request.forms.getunicode('kolicina_delna')
+    kupna_cena = bottle.request.forms.getunicode('kupna_cena')
+    cas_nakupa = bottle.request.forms.getunicode('cas_nakupa')
+    if bottle.request.forms.getunicode['stop']:
+        stop = bottle.request.forms.getunicode('stop')
+    else:
+        stop = None
+    if bottle.request.forms['limit']:
+        limit = bottle.request.forms.getunicode('limit')
+    else:
+        limit = None
     #if bottle.request.forms['datum']:
     #    datum = date.fromisoformat(bottle.request.forms['datum'])
     #else:
     #    datum = None
-    vec_valute = poskus.Nakup(kolicina)
+    vec_valute = poskus.Nakup(kratica, kolicina_delna)
     portfelj = nalozi_portfelj()
     portfelj.kupi_vec(vec_valute)
     shrani_portfelj(portfelj)
@@ -112,7 +122,7 @@ def prodaj_valuto():
     shrani_portfelj(portfelj)
     bottle.redirect('/')
 
-@bottle.post('/zamenjaj-trenuto-valuto/')
+@bottle.post('/zamenjaj-trenutno-valuto/')
 def zamenjaj_trenutno_valuto():
     print(dict(bottle.request.forms))
     indeks = bottle.request.forms.getunicode('indeks')
