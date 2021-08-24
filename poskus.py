@@ -17,8 +17,9 @@ class Portfelj:
     #def kolicina_valute(self, kolicina=None):
     #    self.kolicina = kolicina
     
-    def prodaj_vse(self, valuta):
-        self.moje_valute.remove(valuta)
+    def prodaj_vse(self):
+        self.moje_valute.remove(self.trenutna_valuta)
+        # ko jo pobriše ne skoči nikamor in kaže error, bo treba dodati na roke popravek
 
     def zamenjaj_valuto(self, valuta):
         self.trenutna_valuta = valuta
@@ -95,16 +96,16 @@ class Valuta:
 
 
 class Nakup:
-    def __init__(self, kratica, kolicina_delna, kupna_cena, cas_nakupa, stop=None, limit=None):
-        self.kratica = kratica
+    def __init__(self, kolicina_delna, kupna_cena, cas_nakupa, stop=None, limit=None):
         self.kolicina_delna = kolicina_delna
         self.kupna_cena = kupna_cena
         self.cas_nakupa = cas_nakupa
         self.stop = stop
         self.limit = limit
 
-    def trenutna_cena_valute(self):
-       kratica_x = ''.join(self.kratica.split('/'))
+    @staticmethod
+    def trenutna_cena_valute(kratica):
+       kratica_x = ''.join(kratica.split('/'))
        # moral boš še naredit, da vmesnik pretvori vse kratice v obliko 'ABC/DEF'
        kazalec = yf.Ticker(f'{kratica_x}=X')
        podatki = kazalec.history(period='1d')
@@ -116,10 +117,9 @@ class Nakup:
 
     def v_slovar(self):
         return {
-            'kratica': self.kratica,
             'kolicina_delna': self.kolicina_delna,
             'kupna_cena': self.kupna_cena,
-            'cas_nakupa': self.cas_nakupa,
+            'cas_nakupa': dt.datetime.isoformat(self.cas_nakupa),
             'stop': self.stop,
             'limit': self.limit,
         }
@@ -128,10 +128,9 @@ class Nakup:
     @staticmethod
     def iz_slovarja(slovar):
         return Nakup(
-            slovar['kratica'],
             slovar['kolicina_delna'],
             slovar['kupna_cena'],
-            slovar['cas_nakupa'],
+            dt.datetime.fromisoformat(slovar['cas_nakupa']),
             slovar['stop'],
             slovar['limit'],
         )

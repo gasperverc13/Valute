@@ -8,24 +8,22 @@
                 % if valuta == trenutna_valuta:
                 <button class='button is-primary is-selected' name='indeks' value='{{indeks}}'>
                     {{valuta.kratica}}
-                                     
                 </button>
-                <form method='POST' action='/prodaj-valuto/'>
-                    <input type='hidden' name='indeks' value='{{indeks}}'>
-                    <button class="button is-black">
-                        <i class="fas fa-minus-circle"></i>
-                    </button>
-                </form>   
                 % else:
                 <button class='button' name='indeks' value='{{indeks}}'>
                     {{valuta.kratica}}
-
                 </button>
                 % end
                 % end
             </div>
         </form>
-
+        % if len(moje_valute) > 0:
+        <form method='POST' action='/prodaj-valuto/'>
+            <button class="button is-white">
+                <i class="fas fa-minus-circle"></i>
+            </button>
+        </form> 
+        % end
     </div>
     <div class='level-right'>
         <div class='level-item'>
@@ -42,32 +40,31 @@
         <tr>
             <form method='POST' action='/dodaj/'>
                 <td></td>
-
-                <!--<td>
-                    <div class='control has-icons-left'>
-                        <input class='input is-small' type='text' name='kratica' placeholder='kratica'>
-                        <span class='icon is-small is-left'>
-                            <i class='fas fa-dollar-sign'></i>
-                        </span>
-                    </div>
-                </td>-->
-                <!--<td>
-                    <div class='control has-icons-left'>
-                        <input class='input is-small' type='text' name='datum' placeholder='datum'>
-                        <span class='icon is-small is-left'>
-                            <i class='fas fa-calendar-alt'></i>
-                        </span>
-                    </div>
-                </td>-->
                 <td>
                     <div class='control has-icons-left'>
-                        <input class='input is-small' type='text' name='kolicina' placeholder='količina'>
+                        <input class='input is-small' type='text' name='kolicina_delna' placeholder='količina'>
                         <span class='icon is-small is-left'>
                             <i class='fas fa-angle-double-right'></i>
                         </span>
                     </div>
                 </td>
-                <!--<td>
+                <td>
+                    <div class='control has-icons-left'>
+                        <input class='input is-small' type='text' name='kupna_cena' placeholder='cena'>
+                        <span class='icon is-small is-left'>
+                            <i class='fas fa-coins'></i>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class='control has-icons-left'>
+                        <input class='input is-small' type='text' name='cas_nakupa' placeholder='čas nakupa'>
+                        <span class='icon is-small is-left'>
+                            <i class='far fa-clock'></i>
+                        </span>
+                    </div>
+                </td>
+                <td>
                     <div class='control has-icons-left'>
                         <input class='input is-small' type='text' name='stop' placeholder='stop'>
                         <span class='icon is-small is-left'>
@@ -82,7 +79,7 @@
                             <i class='fas fa-angle-double-right'></i>
                         </span>
                     </div>
-                </td>-->
+                </td>
                 <td>
                     <div class='control'>
                         <button class='button is-info is-small'>dodaj</button>

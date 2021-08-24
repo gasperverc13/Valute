@@ -2,7 +2,7 @@ import bottle
 import plotly
 import poskus
 import os
-import datetime
+import datetime as dt
 
 
 def nalozi_portfelj():
@@ -68,26 +68,21 @@ def odjava():
 
 
 @bottle.post('/dodaj/')
-def dodaj():
-    kratica = bottle.request.forms.getunicode('kratica')
-    kolicina_delna = bottle.request.forms.getunicode('kolicina_delna')
-    kupna_cena = bottle.request.forms.getunicode('kupna_cena')
-    cas_nakupa = bottle.request.forms.getunicode('cas_nakupa')
-    if bottle.request.forms.getunicode['stop']:
-        stop = bottle.request.forms.getunicode('stop')
+def dodaj_nakup():
+    kolicina_delna = bottle.request.forms['kolicina_delna']
+    kupna_cena = bottle.request.forms['kupna_cena']
+    cas_nakupa = dt.datetime.fromisoformat(bottle.request.forms['cas_nakupa'])
+    if bottle.request.forms['stop']:
+        stop = bottle.request.forms['stop']
     else:
         stop = None
     if bottle.request.forms['limit']:
-        limit = bottle.request.forms.getunicode('limit')
+        limit = bottle.request.forms['limit']
     else:
         limit = None
-    #if bottle.request.forms['datum']:
-    #    datum = date.fromisoformat(bottle.request.forms['datum'])
-    #else:
-    #    datum = None
-    vec_valute = poskus.Nakup(kratica, kolicina_delna)
+    nakup = poskus.Nakup(kolicina_delna, kupna_cena, cas_nakupa, stop, limit)
     portfelj = nalozi_portfelj()
-    portfelj.kupi_vec(vec_valute)
+    portfelj.kupi_vec(nakup)
     shrani_portfelj(portfelj)
     bottle.redirect('/')
 
@@ -117,8 +112,8 @@ def dodaj_valuto_post():
 def prodaj_valuto():
     indeks = bottle.request.forms.getunicode('indeks')
     portfelj = nalozi_portfelj()
-    valuta = portfelj.trenutna_valuta.kupljeno[int(indeks)]
-    valuta.prodaj()
+    portfelj.prodaj_vse()
+    #portfelj.trenutna_valuta = 
     shrani_portfelj(portfelj)
     bottle.redirect('/')
 
