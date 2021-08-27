@@ -61,15 +61,49 @@
     <thead>
         
         <tr>
-            <form method="POST" action="/dodaj-valuto/">
+            <form method="POST" action="/dodaj/">
                 <td></td>
                 <td>
                     <div class="input-group">
                         <span class="input-group-text">
-                            <i class="bi bi-currency-dollar"></i>
+                            <i class="bi bi-arrow-up"></i>
                         </span>
-                        <input class="form-control" type="text" name="kratica" placeholder="Kratica">
+                        <input class="form-control" type="text" name="kolicina_delna" placeholder="Količina">
+
                     </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-cash"></i>
+                        </span>
+                        <input class="form-control" type="text" name="kupna_cena" placeholder="Cena">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-clock"></i>
+                        </span>
+                        <input class="form-control" type="text" name="cas_nakupa" placeholder="Čas nakupa">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-slash-lg"></i>
+                        </span>
+                        <input class="form-control" type="text" name="stop" placeholder="Stop*">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </span>
+                        <input class="form-control" type="text" name="limit" placeholder="Limit*">
+                    </div>
+                </td>
                 <td>
                     <button class="btn btn-outline-success" type="submit">Dodaj</button>
                 </td>
@@ -78,18 +112,18 @@
         
     </thead>
     <tbody>
-        % for indeks, valuta in enumerate(moje_valute):
+        <tr>* Ni potrebno vpisati</tr>
+        % for indeks, nakup in enumerate(kupljeno):
         <tr>
-            <td>{{ valuta.kratica }}</td>
-            <td>{{ valuta.skupna_kolicina }}</td>
-            <td>{{ valuta.trenutna_cena }}</td>
-            <td>{{ valuta.skupna_razlika }}</td>
+            <td>{{ nakup.cas_nakupa }}</td>
+            <td>{{ nakup.kolicina_delna }}</td>
+            <td>{{ nakup.kupna_cena }}</td>
+            <td>{{ nakup.trenutna_cena }}</td>
+            <td>{{ nakup.stop }}</td>
+            <td>{{ nakup.limit }}</td>
+            <td>{{ nakup.razlika }}</td>
             <td></td>
         </tr>
         % end
     </tbody>
 </table>
-
-% else:
-
-<p>Nimate še nobene valute. <a href="/dodaj-valuto/">Dodajte jo!</a></p>

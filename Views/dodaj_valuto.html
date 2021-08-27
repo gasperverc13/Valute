@@ -1,21 +1,19 @@
-% rebase('base.html')
-<form method='POST'>
-    <div class='field'>
-        <label class='label'>Kratica</label>
-        <div class='control has-icons-left has-icons-right'>
-            <input class='input' name='kratica' type='text' placeholder='kratica' value="{{polja.get('kratica')}}">
-            <span class='icon is-small is-left'>
-                <i class='fas fa-dollar-sign'></i>
+% rebase("base.html")
+<form method="POST" class="row g-2">
+    <p>Kratice vnašajte v obliki ABC/DEF</p>
+    <div class="col-auto">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-currency-dollar"></i>
             </span>
+            <input class="form-control" name="kratica" type="text" placeholder="kratica" value="{{polja.get('kratica')}}">
         </div>
         <!--tukaj še enkrat dodaj ko delaš funkcijo za preverjanje napak-->
     </div>
-    <div class='field is-grouped'>
-        <div class='control'>
-            <button class='button is-link'>Dodaj</button>
-        </div>
-        <div class='control'>
-            <a class='button is-link is-light' href='/'>Prekliči</a>
-        </div>
+    <div class="col-auto">
+        <button class="btn btn-light" type="submit">Dodaj</button>
+    </div>
+    <div>
+        <a class="btn btn-link" href="/">Prekliči</a>
     </div>
 </form>

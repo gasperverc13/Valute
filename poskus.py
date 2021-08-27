@@ -62,6 +62,8 @@ class Portfelj:
         napake = {}
         if not kratica:
             napake['kratica'] = 'Ime mora biti neprazno.'
+        elif kratica in self.moje_valute:
+            napake['kratica'] = 'Ta kratica je že vpisana.'
         #for valuta in self.spiski:
         #    if valuta.kratica == kratica:
         #        napake['kratica'] = 'Kratica je že zasedena.'
