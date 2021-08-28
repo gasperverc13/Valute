@@ -1,12 +1,16 @@
 % rebase("base.html")
 <form method="POST" class="row g-2">
-    <p>Kratice vnašajte v obliki ABC/DEF</p>
+
+    <p>POZOR: Zaradi uporabe knjižnice yfinance nekatere funkcije ne bodo delovale za vse valute.
+        Podprte valute najdete na <a href="https://finance.yahoo.com/currencies" target="_blank">Yahoo!Finance</a>.</p>
+    <label class="label">Kratice vnašajte v obliki ABC/DEF:</label>    
     <div class="col-auto">
         <div class="input-group">
             <span class="input-group-text">
                 <i class="bi bi-currency-dollar"></i>
             </span>
-            <input class="form-control" name="kratica" type="text" placeholder="kratica" value="{{polja.get('kratica')}}">
+            <input class="form-control" name="kratica" type="text" placeholder="kratica"
+                value="{{polja.get('kratica')}}">
         </div>
         <!--tukaj še enkrat dodaj ko delaš funkcijo za preverjanje napak-->
     </div>
