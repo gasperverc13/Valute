@@ -74,7 +74,7 @@ def prijava_post():
 @bottle.post("/odjava/")
 def odjava():
     bottle.response.delete_cookie('uporabnisko_ime', path="/")
-    print('piškotek uspešno pobrisan')
+    print('Piškotek uspešno pobrisan.')
     bottle.redirect("/")
 
 
@@ -97,7 +97,7 @@ def dodaj_nakup():
     nakup = poskus.Nakup(kratica_del, kolicina_delna, kupna_cena, cas_nakupa, stop, limit)
     portfelj.kupi_vec(nakup)
     shrani_portfelj(portfelj)
-    bottle.redirect("/")
+    bottle.redirect("/valuta/")
 
 
 @bottle.get("/dodaj-valuto/")
@@ -119,7 +119,7 @@ def dodaj_valuto_post():
         portfelj.dodaj_valuto(valuta)
         portfelj.trenutna_valuta = valuta
         shrani_portfelj(portfelj)
-        bottle.redirect("/")
+        bottle.redirect("/valuta/")
 
 
 @bottle.post("/prodaj-valuto/")
@@ -134,7 +134,7 @@ def prodaj_valuto():
         portfelj.trenutna_valuta = None
     #portfelj.trenutna_valuta = 
     shrani_portfelj(portfelj)
-    bottle.redirect("/")
+    bottle.redirect("/valuta/")
 
 @bottle.post("/zamenjaj-trenutno-valuto/")
 def zamenjaj_trenutno_valuto():
@@ -144,7 +144,7 @@ def zamenjaj_trenutno_valuto():
     valuta = portfelj.moje_valute[int(indeks)]
     portfelj.trenutna_valuta = valuta
     shrani_portfelj(portfelj)
-    bottle.redirect("/")
+    bottle.redirect("/valuta/")
 
 
 @bottle.error(404)
