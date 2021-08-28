@@ -12,21 +12,24 @@ def nalozi_portfelj():
     else:
         bottle.redirect("/prijava/")
 
+
 def shrani_portfelj(portfelj):
     uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
     portfelj.shrani_v_datoteko(uporabnisko_ime)
 
-#potem spremeni nazaj na zacetna.html
+# potem spremeni nazaj na zacetna.html
+
+
 @bottle.get("/")
 def zacetna_stran():
     portfelj = nalozi_portfelj()
     return bottle.template(
         'zacetna.html',
         moje_valute=portfelj.moje_valute,
-        trenutna_valuta=portfelj.trenutna_valuta,
         uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
-        kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],    
+        kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],
     )
+
 
 @bottle.get("/valuta/")
 def valuta():
@@ -38,6 +41,7 @@ def valuta():
         uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
         kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],
     )
+
 
 @bottle.get("/registracija/")
 def registracija_get():
@@ -51,9 +55,11 @@ def registracija_post():
         napake = {'uporabnisko_ime': 'Uporabniško ime že obstaja.'}
         return bottle.template('registracija.html', napake=napake, polja={'uporabnisko_ime': uporabnisko_ime}, uporabnisko_ime=None)
     else:
-        bottle.response.set_cookie('uporabnisko_ime', uporabnisko_ime, path="/")
+        bottle.response.set_cookie(
+            'uporabnisko_ime', uporabnisko_ime, path="/")
         poskus.Portfelj().shrani_v_datoteko(uporabnisko_ime)
         bottle.redirect("/")
+
 
 @bottle.get("/prijava/")
 def prijava_get():
@@ -67,7 +73,8 @@ def prijava_post():
         napake = {'uporabnisko_ime': 'Uporabniško ime ne obstaja.'}
         return bottle.template('prijava.html', napake=napake, polja={'uporabnisko_ime': uporabnisko_ime}, uporabnisko_ime=None)
     else:
-        bottle.response.set_cookie('uporabnisko_ime', uporabnisko_ime, path="/")
+        bottle.response.set_cookie(
+            'uporabnisko_ime', uporabnisko_ime, path="/")
         bottle.redirect("/")
 
 
@@ -94,7 +101,8 @@ def dodaj_nakup():
         limit = bottle.request.forms['limit']
     else:
         limit = None
-    nakup = poskus.Nakup(kratica_del, kolicina_delna, kupna_cena, cas_nakupa, stop, limit)
+    nakup = poskus.Nakup(kratica_del, kolicina_delna,
+                         kupna_cena, cas_nakupa, stop, limit)
     portfelj.kupi_vec(nakup)
     shrani_portfelj(portfelj)
     bottle.redirect("/valuta/")
@@ -102,13 +110,13 @@ def dodaj_nakup():
 
 @bottle.get("/dodaj-valuto/")
 def dodaj_valuto_get():
-    uporabnisko_ime = bottle.request.forms.getunicode('uporabnisko_ime')
+    uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
     return bottle.template('dodaj_valuto.html', napake={}, polja={}, uporabnisko_ime=uporabnisko_ime)
 
 
 @bottle.post("/dodaj-valuto/")
 def dodaj_valuto_post():
-    kratica = bottle.request.forms.getunicode('kratica') 
+    kratica = bottle.request.forms.getunicode('kratica')
     polja = {'kratica': kratica}
     portfelj = nalozi_portfelj()
     napake = portfelj.preveri_podatke_nove_valute(kratica)
@@ -122,19 +130,43 @@ def dodaj_valuto_post():
         bottle.redirect("/valuta/")
 
 
-@bottle.post("/prodaj-valuto/")
-def prodaj_valuto():
+@bottle.post("/prodaj-trenutno-valuto/")
+def prodaj_trenutno_valuto():
     #indeks = bottle.request.forms.getunicode('indeks')
     portfelj = nalozi_portfelj()
-    portfelj.prodaj_vse()
-    #if len(portfelj.moje_valute) == 0:
+    portfelj.prodaj_vse(portfelj.trenutna_valuta)
     if len(portfelj.moje_valute) > 0:
         portfelj.trenutna_valuta = portfelj.moje_valute[0]
     else:
         portfelj.trenutna_valuta = None
-    #portfelj.trenutna_valuta = 
+    shrani_portfelj(portfelj)
+    bottle.redirect("/")
+
+
+@bottle.post("/prodaj-valuto/")
+def prodaj_valuto():
+    portfelj = nalozi_portfelj()
+    indeks = bottle.request.forms.getunicode('indeks')
+    valuta = portfelj.moje_valute[int(indeks)]
+    portfelj.trenutna_valuta = None
+    portfelj.prodaj_vse(valuta)
+    shrani_portfelj(portfelj)
+    if len(portfelj.moje_valute) > 0:
+        bottle.redirect("/")
+    else:
+        bottle.redirect("/dodaj-valuto/")
+
+
+@bottle.post("/prodaj/")
+def prodaj():
+    portfelj = nalozi_portfelj()
+    valuta = portfelj.trenutna_valuta
+    indeks = bottle.request.forms.getunicode('indeks')
+    nakup = valuta.kupljeno[int(indeks)]
+    portfelj.prodaj_del(nakup)
     shrani_portfelj(portfelj)
     bottle.redirect("/valuta/")
+
 
 @bottle.post("/zamenjaj-trenutno-valuto/")
 def zamenjaj_trenutno_valuto():

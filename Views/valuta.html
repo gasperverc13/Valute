@@ -1,7 +1,7 @@
 % rebase("base.html")
-<!-- Main container -->
-<nav class="nav gap-3">
-    <div class="justify-content-left">
+<!--Main container-->
+<nav class="nav gap-3 justify-content-center">
+    <div>
         <form method="POST" action="/zamenjaj-trenutno-valuto/">
             <ul class="nav nav-pills">
                 % for indeks, valuta in enumerate(moje_valute):
@@ -32,7 +32,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="prodaj_modal_label">Prodaj</h5>
+                        <h5 class="modal-title" id="prodaj_modal_label">Odstrani valuto</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Prekliči"></button>
                     </div>
                     <div class="modal-body">
@@ -40,8 +40,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <form method="POST" action="/prodaj-valuto/">
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Odstrani</button>
+                        <form method="POST" action="/prodaj-trenutno-valuto/">
+                            <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Odstrani</button>
                         </form>
                     </div>
                 </div>
@@ -69,8 +69,8 @@
                             <i class="bi bi-arrow-up"></i>
                         </span>
                         <input class="form-control" type="text" name="kolicina_delna" placeholder="Količina">
-
                     </div>
+                     
                 </td>
                 <td>
                     <div class="input-group">
@@ -79,6 +79,7 @@
                         </span>
                         <input class="form-control" type="text" name="kupna_cena" placeholder="Cena">
                     </div>
+                    Trenutna cena: {{valuta.trenutna_cena}}
                 </td>
                 <td>
                     <div class="input-group">
@@ -87,6 +88,7 @@
                         </span>
                         <input class="form-control" type="text" name="cas_nakupa" placeholder="Čas nakupa">
                     </div>
+                     
                 </td>
                 <td>
                     <div class="input-group">
@@ -95,6 +97,7 @@
                         </span>
                         <input class="form-control" type="text" name="stop" placeholder="Stop*">
                     </div>
+                    * Ni potrebno vpisati
                 </td>
                 <td>
                     <div class="input-group">
@@ -103,17 +106,17 @@
                         </span>
                         <input class="form-control" type="text" name="limit" placeholder="Limit*">
                     </div>
+                     
                 </td>
                 <td>
                     <button class="btn btn-outline-success" type="submit">Dodaj</button>
+                     
                 </td>
             </form>
         </tr>
     </thead>
     <tbody>
-        <tr>* Ni potrebno vpisati</tr>
         % for indeks, nakup in enumerate(kupljeno):
-        <tr>Trenutna cena: {{ nakup.trenutna_cena }}</tr>
         <tr>
             <td>{{ nakup.cas_nakupa }}</td>
             <td>{{ nakup.kolicina_delna }}</td>
@@ -121,7 +124,13 @@
             <td>{{ nakup.stop }}</td>
             <td>{{ nakup.limit }}</td>
             <td>{{ nakup.razlika_delna }}</td>
-            <td></td>
+            <td>
+                <form method="POST" action="/prodaj/">
+                    <button type="submit" class="btn btn-outline-danger" name="indeks" value="{{indeks}}">
+                        <i class="bi bi-dash-circle"></i>
+                    </button>
+                </form>
+            </td>
         </tr>
         % end
     </tbody>

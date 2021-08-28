@@ -1,7 +1,6 @@
 % rebase("base.html")
 <!-- Main container -->
-% if trenutna_valuta:
-
+% if len(moje_valute) > 0:
 <table class="table table-hover table-striped">
     <thead>
         <tr>
@@ -37,7 +36,6 @@
             <td>{{ valuta.skupna_razlika }}</td>
             <td>
                 <div>
-                    % if len(moje_valute) > 0:
                     <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#prodaj_modal">
                         <i class="bi bi-dash-circle"></i>
                     </button>
@@ -46,7 +44,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="prodaj_modal_label">Prodaj</h5>
+                                    <h5 class="modal-title" id="prodaj_modal_label">Odstrani valuto</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Prekliči"></button>
                                 </div>
@@ -57,14 +55,13 @@
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
                                     <form method="POST" action="/prodaj-valuto/">
-                                        <button type="submit" class="btn btn-primary"
-                                            data-bs-dismiss="modal">Odstrani</button>
+                                        <button type="submit" class="btn btn-danger" data-bs-dismiss="modal"
+                                            name="indeks" value="{{indeks}}">Odstrani</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    % end
                 </div>
             </td>
         </tr>

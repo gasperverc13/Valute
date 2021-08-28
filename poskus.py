@@ -17,8 +17,8 @@ class Portfelj:
     # def kolicina_valute(self, kolicina=None):
     #    self.kolicina = kolicina
 
-    def prodaj_vse(self):
-        self.moje_valute.remove(self.trenutna_valuta)
+    def prodaj_vse(self, valuta):
+        self.moje_valute.remove(valuta)
         # ko jo pobriše ne skoči nikamor in kaže error, bo treba dodati na roke popravek
 
     def zamenjaj_valuto(self, valuta):
@@ -75,6 +75,9 @@ class Valuta:
     def __init__(self, kratica):
         self.kratica = kratica
         self.kupljeno = []
+        self.trenutna_cena = Nakup.trenutna_cena_valute(self.kratica)
+        self.skupna_razlika = float(f'{Valuta.razlika(self.kupljeno, self.trenutna_cena):.4f}')
+        self.skupna_kolicina = Valuta.kolicina_skupna(self.kupljeno)
 
     def dodaj_nakup(self, nakup):
         self.kupljeno.append(nakup)
@@ -82,29 +85,31 @@ class Valuta:
     def prodaj_del(self, nakup):
         self.kupljeno.remove(nakup)
 
-    def kolicina_skupna(self):
+    @staticmethod
+    def kolicina_skupna(kupljeno):
         skupna = 0
-        for nakup in self.kupljeno:
+        for nakup in kupljeno:
             kolicina = nakup['kolicina_delna']
             skupna += kolicina
         return skupna
 
-    def razlika(self):
+    @staticmethod
+    def razlika(kupljeno, trenutna_cena):
         skupna = 0
-        for nakup in self.kupljeno:
+        for nakup in kupljeno:
             skupna += nakup['kupna_cena'] * nakup['kolicina_delna']
-        if Nakup.trenutna_cena_valute(self.kratica).isnumeric():
-            return self.kolicina_skupna() * Nakup.trenutna_cena_valute(self.kratica) - skupna
-        else:
+        if type(trenutna_cena) == str:
             return 'Ni podatka'
+        else:
+            return Valuta.kolicina_skupna(kupljeno) * trenutna_cena - skupna
 
     def v_slovar(self):
         return {
             'kratica': self.kratica,
             'kupljeno': [nakup.v_slovar() for nakup in self.kupljeno],
-            'skupna_kolicina': self.kolicina_skupna(),
-            'trenutna_cena': Nakup.trenutna_cena_valute(self.kratica),
-            'skupna_razlika': self.razlika(),
+            'skupna_kolicina': self.skupna_kolicina,
+            'trenutna_cena': self.trenutna_cena,
+            'skupna_razlika': self.skupna_razlika,
         }
 
     @staticmethod
@@ -113,6 +118,7 @@ class Valuta:
         valuta.kupljeno = [
             Nakup.iz_slovarja(sl_kupljeno) for sl_kupljeno in slovar['kupljeno']
         ]
+        # valuta.skupna_kolicina =
         return valuta
 
 
@@ -124,12 +130,14 @@ class Nakup:
         self.cas_nakupa = cas_nakupa
         self.stop = stop
         self.limit = limit
+        self.razlika_delna = float(f'{Nakup.razlika_delna(self.kratica_del, self.kupna_cena, self.kolicina_delna):.4f}')
 
-    def razlika_delna(self):
-        if Nakup.trenutna_cena_valute(self.kratica_del).isnumeric():
-            return (Nakup.trenutna_cena_valute(self.kratica_del) - self.kupna_cena) * self.kolicina_delna
-        else:
+    @staticmethod
+    def razlika_delna(kratica_del, kupna_cena, kolicina_delna):
+        if type(Nakup.trenutna_cena_valute(kratica_del)) == str:
             return 'Ni podatka'
+        else:
+            return (Nakup.trenutna_cena_valute(kratica_del) - kupna_cena) * kolicina_delna
 
     # def prodaj(self):
     #    self.kolicina_delna = None
@@ -144,7 +152,7 @@ class Nakup:
         valuta = yf.Ticker(f'{kratica_x}=X')
         try:
             cena = valuta.info['regularMarketPrice']
-            return cena
+            return float(f'{cena:.4f}')
         except KeyError:
             return 'Ni podatka'
 
@@ -156,8 +164,7 @@ class Nakup:
             'cas_nakupa': dt.datetime.isoformat(self.cas_nakupa),
             'stop': self.stop,
             'limit': self.limit,
-            'trenutna_cena_del': Nakup.trenutna_cena_valute(self.kratica_del),
-            'razlika_delna': self.razlika_delna()
+            'razlika_delna': self.razlika_delna,
         }
     # vrednost in cas nista zahtevana v init, ugotovi ali je to problem
 
