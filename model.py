@@ -79,7 +79,7 @@ class Valuta:
         self.kratica = kratica
         self.kupljeno = []
         self.trenutna_cena = Nakup.trenutna_cena_valute(self.kratica)
-        self.skupna_razlika = float(f'{Valuta.razlika(self.kupljeno, self.trenutna_cena):.4f}')
+        self.skupna_razlika = Valuta.razlika(self.kupljeno, self.trenutna_cena)
         self.skupna_kolicina = Valuta.kolicina_skupna(self.kupljeno)
 
     def dodaj_nakup(self, nakup):
@@ -108,7 +108,7 @@ class Valuta:
         if type(trenutna_cena) == str:
             return 'Ni podatka'
         else:
-            return Valuta.kolicina_skupna(kupljeno) * trenutna_cena - skupna
+            return float(f'{Valuta.kolicina_skupna(kupljeno) * trenutna_cena - skupna:.4f}')
 
     def v_slovar(self):
         return {
@@ -137,14 +137,14 @@ class Nakup:
         self.cas_nakupa = cas_nakupa
         self.stop = stop
         self.limit = limit
-        self.razlika_delna = float(f'{Nakup.razlika_delna(self.kratica_del, self.kupna_cena, self.kolicina_delna):.4f}')
+        self.razlika_delna = Nakup.razlika_delna(self.kratica_del, self.kupna_cena, self.kolicina_delna)
 
     @staticmethod
     def razlika_delna(kratica_del, kupna_cena, kolicina_delna):
         if type(Nakup.trenutna_cena_valute(kratica_del)) == str:
             return 'Ni podatka'
         else:
-            return (Nakup.trenutna_cena_valute(kratica_del) - kupna_cena) * kolicina_delna
+            return float(f'{(Nakup.trenutna_cena_valute(kratica_del) - kupna_cena) * kolicina_delna:.4f}')
 
     # def prodaj(self):
     #    self.kolicina_delna = None
@@ -173,7 +173,6 @@ class Nakup:
             'limit': self.limit,
             'razlika_delna': self.razlika_delna,
         }
-    # vrednost in cas nista zahtevana v init, ugotovi ali je to problem
 
     @staticmethod
     def iz_slovarja(slovar):
