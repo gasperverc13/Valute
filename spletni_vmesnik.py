@@ -1,6 +1,6 @@
 import bottle
 import plotly
-import poskus
+import model
 import os
 import datetime as dt
 
@@ -8,7 +8,7 @@ import datetime as dt
 def nalozi_portfelj():
     uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
     if uporabnisko_ime:
-        return poskus.Portfelj.preberi_iz_datoteke(uporabnisko_ime)
+        return model.Portfelj.preberi_iz_datoteke(uporabnisko_ime)
     else:
         bottle.redirect("/prijava/")
 
@@ -57,7 +57,7 @@ def registracija_post():
     else:
         bottle.response.set_cookie(
             'uporabnisko_ime', uporabnisko_ime, path="/")
-        poskus.Portfelj().shrani_v_datoteko(uporabnisko_ime)
+        model.Portfelj().shrani_v_datoteko(uporabnisko_ime)
         bottle.redirect("/")
 
 
@@ -101,7 +101,7 @@ def dodaj_nakup():
         limit = bottle.request.forms['limit']
     else:
         limit = None
-    nakup = poskus.Nakup(kratica_del, kolicina_delna,
+    nakup = model.Nakup(kratica_del, kolicina_delna,
                          kupna_cena, cas_nakupa, stop, limit)
     portfelj.kupi_vec(nakup)
     shrani_portfelj(portfelj)
@@ -123,7 +123,7 @@ def dodaj_valuto_post():
     if napake:
         return bottle.template('dodaj_valuto.html', napake=napake, polja=polja)
     else:
-        valuta = poskus.Valuta(kratica)
+        valuta = model.Valuta(kratica)
         portfelj.dodaj_valuto(valuta)
         portfelj.trenutna_valuta = valuta
         shrani_portfelj(portfelj)
