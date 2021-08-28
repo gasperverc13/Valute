@@ -16,7 +16,7 @@ def shrani_portfelj(portfelj):
     uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
     portfelj.shrani_v_datoteko(uporabnisko_ime)
 
-
+#potem spremeni nazaj na zacetna.html
 @bottle.get("/")
 def zacetna_stran():
     portfelj = nalozi_portfelj()
@@ -26,6 +26,17 @@ def zacetna_stran():
         trenutna_valuta=portfelj.trenutna_valuta,
         uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
         kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],    
+    )
+
+@bottle.get("/valuta/")
+def valuta():
+    portfelj = nalozi_portfelj()
+    return bottle.template(
+        'valuta.html',
+        moje_valute=portfelj.moje_valute,
+        trenutna_valuta=portfelj.trenutna_valuta,
+        uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
+        kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],
     )
 
 @bottle.get("/registracija/")
@@ -69,6 +80,9 @@ def odjava():
 
 @bottle.post("/dodaj/")
 def dodaj_nakup():
+    portfelj = nalozi_portfelj()
+    valuta = portfelj.trenutna_valuta
+    kratica_del = valuta.kratica
     kolicina_delna = bottle.request.forms['kolicina_delna']
     kupna_cena = bottle.request.forms['kupna_cena']
     cas_nakupa = dt.datetime.fromisoformat(bottle.request.forms['cas_nakupa'])
@@ -80,8 +94,7 @@ def dodaj_nakup():
         limit = bottle.request.forms['limit']
     else:
         limit = None
-    nakup = poskus.Nakup(kolicina_delna, kupna_cena, cas_nakupa, stop, limit)
-    portfelj = nalozi_portfelj()
+    nakup = poskus.Nakup(kratica_del, kolicina_delna, kupna_cena, cas_nakupa, stop, limit)
     portfelj.kupi_vec(nakup)
     shrani_portfelj(portfelj)
     bottle.redirect("/")
@@ -96,17 +109,17 @@ def dodaj_valuto_get():
 @bottle.post("/dodaj-valuto/")
 def dodaj_valuto_post():
     kratica = bottle.request.forms.getunicode('kratica') 
-    #polja = {'kratica': kratica}
+    polja = {'kratica': kratica}
     portfelj = nalozi_portfelj()
-   # napake = stanje.preveri_podatke_novega_spiska(ime)
-    #if napake:
-    #    return bottle.template('dodaj_spisek.html', napake=napake, polja=polja)
-    #else:
-    valuta = poskus.Valuta(kratica)
-    portfelj.dodaj_valuto(valuta)
-    portfelj.trenutna_valuta = valuta
-    shrani_portfelj(portfelj)
-    bottle.redirect("/")
+    napake = portfelj.preveri_podatke_nove_valute(kratica)
+    if napake:
+        return bottle.template('dodaj_valuto.html', napake=napake, polja=polja)
+    else:
+        valuta = poskus.Valuta(kratica)
+        portfelj.dodaj_valuto(valuta)
+        portfelj.trenutna_valuta = valuta
+        shrani_portfelj(portfelj)
+        bottle.redirect("/")
 
 
 @bottle.post("/prodaj-valuto/")

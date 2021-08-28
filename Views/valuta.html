@@ -56,7 +56,7 @@
 </nav>
 
 % if trenutna_valuta:
-
+% valuta = trenutna_valuta
 <table class="table table-hover table-striped">
     <thead>
         
@@ -109,19 +109,18 @@
                 </td>
             </form>
         </tr>
-        
     </thead>
     <tbody>
         <tr>* Ni potrebno vpisati</tr>
         % for indeks, nakup in enumerate(kupljeno):
+        <tr>Trenutna cena: {{ nakup.trenutna_cena }}</tr>
         <tr>
             <td>{{ nakup.cas_nakupa }}</td>
             <td>{{ nakup.kolicina_delna }}</td>
             <td>{{ nakup.kupna_cena }}</td>
-            <td>{{ nakup.trenutna_cena }}</td>
             <td>{{ nakup.stop }}</td>
             <td>{{ nakup.limit }}</td>
-            <td>{{ nakup.razlika }}</td>
+            <td>{{ nakup.razlika_delna }}</td>
             <td></td>
         </tr>
         % end
