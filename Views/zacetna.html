@@ -1,65 +1,9 @@
 % rebase("base.html")
 <!-- Main container -->
-<nav class="nav gap-3">
-    <div class="justify-content-left">
-        <form method="POST" action="/zamenjaj-trenutno-valuto/">
-            <ul class="nav nav-pills">
-                % for indeks, valuta in enumerate(moje_valute):
-                % if valuta == trenutna_valuta:
-                <li class="nav-item">
-                    <button class="nav-link active" name="indeks" value="{{indeks}}">
-                        {{valuta.kratica}}
-                    </button>
-                </li>
-                % else:
-                <li class="nav-item">
-                    <button class="nav-link" name="indeks" value="{{indeks}}">
-                        {{valuta.kratica}}
-                    </button>
-                </li>
-                % end
-                % end
-            </ul>
-        </form>
-    </div>
-    <div>
-        % if len(moje_valute) > 0:
-        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#prodaj_modal">
-            <i class="bi bi-dash-circle"></i>
-        </button>
-        <div class="modal fade" id="prodaj_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-            aria-labelledby="prodaj_modal_label" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="prodaj_modal_label">Prodaj</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Prekliči"></button>
-                    </div>
-                    <div class="modal-body">
-                        Ali res želite odstraniti valuto?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <form method="POST" action="/prodaj-valuto/">
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Odstrani</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        % end    
-        
-    </div>
-    <div>
-        <a class="btn btn-success" href="/dodaj-valuto/" role="button">Dodaj valuto</a>
-    </div>
-</nav>
-
 % if trenutna_valuta:
 
 <table class="table table-hover table-striped">
     <thead>
-        
         <tr>
             <form method="POST" action="/dodaj-valuto/">
                 <td></td>
@@ -75,16 +19,54 @@
                 </td>
             </form>
         </tr>
-        
     </thead>
     <tbody>
         % for indeks, valuta in enumerate(moje_valute):
         <tr>
-            <td>{{ valuta.kratica }}</td>
+            <td>
+                <div class="justify-content-left">
+                    <form method="POST" action="/zamenjaj-trenutno-valuto/">
+                        <button class="btn btn-outline-primary" name="indeks" value="{{indeks}}">
+                            {{valuta.kratica}}
+                        </button>
+                    </form>
+                </div>
+            </td>
             <td>{{ valuta.skupna_kolicina }}</td>
             <td>{{ valuta.trenutna_cena }}</td>
             <td>{{ valuta.skupna_razlika }}</td>
-            <td></td>
+            <td>
+                <div>
+                    % if len(moje_valute) > 0:
+                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#prodaj_modal">
+                        <i class="bi bi-dash-circle"></i>
+                    </button>
+                    <div class="modal fade" id="prodaj_modal" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="prodaj_modal_label" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="prodaj_modal_label">Prodaj</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Prekliči"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Ali res želite odstraniti valuto?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <form method="POST" action="/prodaj-valuto/">
+                                        <button type="submit" class="btn btn-primary"
+                                            data-bs-dismiss="modal">Odstrani</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    % end
+                </div>
+            </td>
         </tr>
         % end
     </tbody>
