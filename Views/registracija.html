@@ -5,7 +5,7 @@
             <span class="input-group-text">
                 <i class="bi bi-person-fill"></i>
             </span>
-            <input class="form-control" name="uporabnisko_ime" type="text" placeholder="Uporabniško ime" value="{{polja.get('uporabnisko_ime', '')}}">
+            <input class="form-control" name="uporabnisko_ime" type="text" placeholder="Uporabniško ime" value="{{polja.get('uporabnisko_ime', '')}}" autofocus>
         </div>
         % if 'uporabnisko_ime' in napake:
         <p class="help is-danger">{{ napake['uporabnisko_ime'] }}</p>
