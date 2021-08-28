@@ -9,14 +9,14 @@ class Portfelj:
         self.trenutna_valuta = None
 
     def dodaj_valuto(self, valuta):
-        #if valuta not in self.moje_valute:
+        # if valuta not in self.moje_valute:
         self.moje_valute.append(valuta)
         if not self.trenutna_valuta:
             self.trenutna_valuta = valuta
 
-    #def kolicina_valute(self, kolicina=None):
+    # def kolicina_valute(self, kolicina=None):
     #    self.kolicina = kolicina
-    
+
     def prodaj_vse(self):
         self.moje_valute.remove(self.trenutna_valuta)
         # ko jo pobriše ne skoči nikamor in kaže error, bo treba dodati na roke popravek
@@ -26,7 +26,7 @@ class Portfelj:
 
     def kupi_vec(self, nakup):
         self.trenutna_valuta.dodaj_nakup(nakup)
-    
+
     def prodaj_del(self, nakup):
         self.trenutna_valuta.prodaj_del(nakup)
 
@@ -62,11 +62,11 @@ class Portfelj:
         napake = {}
         if not kratica:
             napake['kratica'] = 'Ime mora biti neprazno.'
-        elif kratica in self.moje_valute:
-            napake['kratica'] = 'Ta kratica je že vpisana.'
-        #for valuta in self.spiski:
-        #    if valuta.kratica == kratica:
-        #        napake['kratica'] = 'Kratica je že zasedena.'
+        elif len(kratica) != 7 or '/' not in kratica:
+            napake['kratica'] = 'Napačen format vnosa.'
+        for valuta in self.moje_valute:
+            if valuta.kratica == kratica:
+                napake['kratica'] = 'Ta kratica je že vpisana.'
         return napake
     # ta del najverjetneje ne bo uporaben
 
@@ -82,54 +82,89 @@ class Valuta:
     def prodaj_del(self, nakup):
         self.kupljeno.remove(nakup)
 
+    def kolicina_skupna(self):
+        skupna = 0
+        for nakup in self.kupljeno:
+            kolicina = nakup['kolicina_delna']
+            skupna += kolicina
+        return skupna
+
+    def razlika(self):
+        skupna = 0
+        for nakup in self.kupljeno:
+            skupna += nakup['kupna_cena'] * nakup['kolicina_delna']
+        if Nakup.trenutna_cena_valute(self.kratica).isnumeric():
+            return self.kolicina_skupna() * Nakup.trenutna_cena_valute(self.kratica) - skupna
+        else:
+            return 'Ni podatka'
+
     def v_slovar(self):
         return {
             'kratica': self.kratica,
-            'nakupi': [nakup.v_slovar() for nakup in self.kupljeno],
+            'kupljeno': [nakup.v_slovar() for nakup in self.kupljeno],
+            'skupna_kolicina': self.kolicina_skupna(),
+            'trenutna_cena': Nakup.trenutna_cena_valute(self.kratica),
+            'skupna_razlika': self.razlika(),
         }
 
     @staticmethod
     def iz_slovarja(slovar):
         valuta = Valuta(slovar['kratica'])
-        valuta.nakupi = [
-            Nakup.iz_slovarja(sl_nakupi) for sl_nakupi in slovar['nakupi']
+        valuta.kupljeno = [
+            Nakup.iz_slovarja(sl_kupljeno) for sl_kupljeno in slovar['kupljeno']
         ]
         return valuta
 
 
 class Nakup:
-    def __init__(self, kolicina_delna, kupna_cena, cas_nakupa, stop=None, limit=None):
-        self.kolicina_delna = kolicina_delna
-        self.kupna_cena = kupna_cena
+    def __init__(self, kratica_del, kolicina_delna, kupna_cena, cas_nakupa, stop, limit):
+        self.kratica_del = kratica_del
+        self.kolicina_delna = int(kolicina_delna)
+        self.kupna_cena = float(kupna_cena)
         self.cas_nakupa = cas_nakupa
         self.stop = stop
         self.limit = limit
 
-    @staticmethod
-    def trenutna_cena_valute(kratica):
-       kratica_x = ''.join(kratica.split('/'))
-       # moral boš še naredit, da vmesnik pretvori vse kratice v obliko 'ABC/DEF'
-       kazalec = yf.Ticker(f'{kratica_x}=X')
-       podatki = kazalec.history(period='1d')
-       return podatki['Close'][0]
+    def razlika_delna(self):
+        if Nakup.trenutna_cena_valute(self.kratica_del).isnumeric():
+            return (Nakup.trenutna_cena_valute(self.kratica_del) - self.kupna_cena) * self.kolicina_delna
+        else:
+            return 'Ni podatka'
 
-    #def prodaj(self):
+    # def prodaj(self):
     #    self.kolicina_delna = None
     # ugotovi, ali je treba 'cas_zdaj', 'trenutna_cena_valute? in 'vrednost' premakniti v drug class
 
+    @staticmethod
+    def trenutna_cena_valute(kratica):
+        if kratica[:3] == 'USD':
+            kratica_x = kratica[-3:]
+        else:
+            kratica_x = ''.join(kratica.split('/'))
+        valuta = yf.Ticker(f'{kratica_x}=X')
+        try:
+            cena = valuta.info['regularMarketPrice']
+            return cena
+        except KeyError:
+            return 'Ni podatka'
+
     def v_slovar(self):
         return {
+            'kratica_del': self.kratica_del,
             'kolicina_delna': self.kolicina_delna,
             'kupna_cena': self.kupna_cena,
             'cas_nakupa': dt.datetime.isoformat(self.cas_nakupa),
             'stop': self.stop,
             'limit': self.limit,
+            'trenutna_cena_del': Nakup.trenutna_cena_valute(self.kratica_del),
+            'razlika_delna': self.razlika_delna()
         }
     # vrednost in cas nista zahtevana v init, ugotovi ali je to problem
 
     @staticmethod
     def iz_slovarja(slovar):
         return Nakup(
+            slovar['kratica_del'],
             slovar['kolicina_delna'],
             slovar['kupna_cena'],
             dt.datetime.fromisoformat(slovar['cas_nakupa']),
