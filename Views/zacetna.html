@@ -1,11 +1,8 @@
 % rebase("base.html")
-<!-- Main container -->
-% if len(moje_valute) > 0:
 <table class="table table-hover table-striped">
     <thead>
         <tr>
             <form method="POST" action="/dodaj-valuto/">
-                <td></td>
                 <td>
                     <div class="input-group">
                         <span class="input-group-text">
@@ -13,6 +10,7 @@
                         </span>
                         <input class="form-control" type="text" name="kratica" placeholder="Kratica">
                     </div>
+                </td>
                 <td>
                     <button class="btn btn-outline-success" type="submit">Dodaj</button>
                 </td>
@@ -20,12 +18,19 @@
         </tr>
     </thead>
     <tbody>
+        <tr style="background-color: azure;">
+            <td>Valuta</td>
+            <td>Skupna količina</td>
+            <td>Trenutna cena</td>
+            <td>Skupna razlika</td>
+            <td>Odstrani</td>
+        </tr>
         % for indeks, valuta in enumerate(moje_valute):
         <tr>
             <td>
                 <div class="justify-content-left">
                     <form method="POST" action="/zamenjaj-trenutno-valuto/">
-                        <button class="btn btn-outline-primary" name="indeks" value="{{indeks}}">
+                        <button type="submit" class="btn btn-outline-primary" name="indeks" value="{{indeks}}">
                             {{valuta.kratica}}
                         </button>
                     </form>
@@ -36,39 +41,14 @@
             <td>{{ valuta.skupna_razlika }}</td>
             <td>
                 <div>
-                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#prodaj_modal">
-                        <i class="bi bi-dash-circle"></i>
-                    </button>
-                    <div class="modal fade" id="prodaj_modal" data-bs-backdrop="static" data-bs-keyboard="false"
-                        tabindex="-1" aria-labelledby="prodaj_modal_label" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="prodaj_modal_label">Odstrani valuto</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Prekliči"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Ali res želite odstraniti valuto?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <form method="POST" action="/prodaj-valuto/">
-                                        <button type="submit" class="btn btn-danger" data-bs-dismiss="modal"
-                                            name="indeks" value="{{indeks}}">Odstrani</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <form method="POST" action="/prodaj-valuto/">
+                        <button class="btn btn-outline-danger" name="indeks" value="{{indeks}}" type="submit">
+                            <i class="bi bi-dash-circle"></i>
+                        </button>
+                    </form>
                 </div>
             </td>
         </tr>
         % end
     </tbody>
 </table>
-
-% else:
-
-<p>Nimate še nobene valute. <a href="/dodaj-valuto/">Dodajte jo!</a></p>
