@@ -23,12 +23,15 @@ def shrani_portfelj(portfelj):
 @bottle.get("/")
 def zacetna_stran():
     portfelj = nalozi_portfelj()
-    return bottle.template(
-        'zacetna.html',
-        moje_valute=portfelj.moje_valute,
-        uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
-        kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],
-    )
+    if len(portfelj.moje_valute) > 0:
+        return bottle.template(
+            'zacetna.html',
+            moje_valute=portfelj.moje_valute,
+            uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
+            kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],
+        )
+    else:
+        bottle.redirect("/dodaj-valuto/")
 
 
 @bottle.get("/valuta/")
@@ -92,19 +95,23 @@ def dodaj_nakup():
     kratica_del = valuta.kratica
     kolicina_delna = bottle.request.forms['kolicina_delna']
     kupna_cena = bottle.request.forms['kupna_cena']
-    cas_nakupa = dt.datetime.fromisoformat(bottle.request.forms['cas_nakupa'])
+    if bottle.request.forms['cas_nakupa']:
+        cas_nakupa = dt.datetime.fromisoformat(bottle.request.forms['cas_nakupa'])
+    else:
+        cas_nakupa = None
     if bottle.request.forms['stop']:
         stop = bottle.request.forms['stop']
     else:
-        stop = None
+        stop = 'Ni podatka'
     if bottle.request.forms['limit']:
         limit = bottle.request.forms['limit']
     else:
-        limit = None
-    nakup = model.Nakup(kratica_del, kolicina_delna,
-                         kupna_cena, cas_nakupa, stop, limit)
-    portfelj.kupi_vec(nakup)
-    shrani_portfelj(portfelj)
+        limit = 'Ni podatka'
+    if (kolicina_delna and kupna_cena) != '':
+        nakup = model.Nakup(kratica_del, kolicina_delna,
+                            kupna_cena, cas_nakupa, stop, limit)
+        portfelj.kupi_vec(nakup)
+        shrani_portfelj(portfelj)
     bottle.redirect("/valuta/")
 
 
@@ -112,7 +119,8 @@ def dodaj_nakup():
 def dodaj_valuto_get():
     uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
     return bottle.template('dodaj_valuto.html', napake={}, polja={}, uporabnisko_ime=uporabnisko_ime)
-
+#get prikaže stran, post prebere vpisane podatke
+#napake so napake v vnosu, polja so prazna oz. izpolnjena polja v obrazcu
 
 @bottle.post("/dodaj-valuto/")
 def dodaj_valuto_post():
@@ -132,7 +140,6 @@ def dodaj_valuto_post():
 
 @bottle.post("/prodaj-trenutno-valuto/")
 def prodaj_trenutno_valuto():
-    #indeks = bottle.request.forms.getunicode('indeks')
     portfelj = nalozi_portfelj()
     portfelj.prodaj_vse(portfelj.trenutna_valuta)
     if len(portfelj.moje_valute) > 0:
@@ -143,18 +150,47 @@ def prodaj_trenutno_valuto():
     bottle.redirect("/")
 
 
+@bottle.get("/pokazi-graf/")
+def pokazi_graf_get():
+    uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
+    return bottle.template('pokazi_graf.html', napake={}, polja={}, uporabnisko_ime=uporabnisko_ime)
+    
+
+@bottle.post("/pokazi-graf/")
+def pokazi_graf():
+    portfelj = nalozi_portfelj()
+    if bottle.request.forms['zacetek']:
+        zacetek = dt.date.fromisoformat(bottle.request.forms['zacetek'])
+    else:
+        zacetek = '2021-01-01'
+    if bottle.request.forms['konec']:
+        konec = dt.date.fromisoformat(bottle.request.forms['konec'])
+    else:
+        konec = None
+    if bottle.request.forms['interval']:
+        interval = bottle.request.forms['interval']
+    else:
+        interval = '1d'
+    portfelj.zgodovina(zacetek, konec, interval)
+    shrani_portfelj(portfelj)
+    bottle.redirect("/valuta/")
+
+
+
 @bottle.post("/prodaj-valuto/")
 def prodaj_valuto():
+    print(dict(bottle.request.forms))
     portfelj = nalozi_portfelj()
     indeks = bottle.request.forms.getunicode('indeks')
     valuta = portfelj.moje_valute[int(indeks)]
-    portfelj.trenutna_valuta = None
     portfelj.prodaj_vse(valuta)
+    portfelj.trenutna_valuta = None
     shrani_portfelj(portfelj)
     if len(portfelj.moje_valute) > 0:
         bottle.redirect("/")
     else:
         bottle.redirect("/dodaj-valuto/")
+    # odstrani valuto z indeksom 0 for some reason?!
 
 
 @bottle.post("/prodaj/")
@@ -170,7 +206,6 @@ def prodaj():
 
 @bottle.post("/zamenjaj-trenutno-valuto/")
 def zamenjaj_trenutno_valuto():
-    print(dict(bottle.request.forms))
     indeks = bottle.request.forms.getunicode('indeks')
     portfelj = nalozi_portfelj()
     valuta = portfelj.moje_valute[int(indeks)]

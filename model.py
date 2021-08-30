@@ -1,6 +1,7 @@
 import yfinance as yf
 import json
 import datetime as dt
+import plotly.graph_objs as go
 
 
 class Portfelj:
@@ -19,7 +20,6 @@ class Portfelj:
 
     def prodaj_vse(self, valuta):
         self.moje_valute.remove(valuta)
-        # ko jo pobriše ne skoči nikamor in kaže error, bo treba dodati na roke popravek
 
     def zamenjaj_valuto(self, valuta):
         self.trenutna_valuta = valuta
@@ -29,9 +29,23 @@ class Portfelj:
 
     def prodaj_del(self, nakup):
         self.trenutna_valuta.prodaj_del(nakup)
-    
-    #def total(self):
+
+    # def total(self):
     #    return sum([valuta.skupna_vrednost() for valuta in self.moje_valute])
+
+    def zgodovina(self, zacetek, konec, interval):
+        kratica = self.trenutna_valuta.kratica
+        if kratica[:3] == 'USD':
+            kratica_x = kratica[-3:]
+        else:
+            kratica_x = ''.join(kratica.split('/'))
+        graf = go.Figure()
+        podatki = yf.download(
+            tickers=f'{kratica_x}=X', start=zacetek, end=konec, interval=interval)
+        graf.add_trace(go.Candlestick(
+            x=podatki.index, open=podatki['Open'], high=podatki['High'], low=podatki['Low'], close=podatki['Close']))
+        graf.update_layout(title=kratica)
+        graf.show()
 
     def v_slovar(self):
         return {
@@ -88,7 +102,7 @@ class Valuta:
     def prodaj_del(self, nakup):
         self.kupljeno.remove(nakup)
 
-    #def skupna_vrednost(self):
+    # def skupna_vrednost(self):
     #    return (sum(self.kupljeno[i] * self.vrednosti[i] for i in range(
     #        len(self.kupljeno))) - Nakup.trenutna_cena_valute(self.kratica) * sum(self.kupljeno))
 
@@ -137,7 +151,8 @@ class Nakup:
         self.cas_nakupa = cas_nakupa
         self.stop = stop
         self.limit = limit
-        self.razlika_delna = Nakup.razlika_delna(self.kratica_del, self.kupna_cena, self.kolicina_delna)
+        self.razlika_delna = Nakup.razlika_delna(
+            self.kratica_del, self.kupna_cena, self.kolicina_delna)
 
     @staticmethod
     def razlika_delna(kratica_del, kupna_cena, kolicina_delna):
@@ -159,8 +174,10 @@ class Nakup:
         valuta = yf.Ticker(f'{kratica_x}=X')
         try:
             cena = valuta.info['regularMarketPrice']
+            #cena = si.get_live_price(f'{kratica_x}=X')
+            # je hitrejša in ima več kratic vendar je podatek drugačen, poskusi ko je market open
             return float(f'{cena:.4f}')
-        except KeyError:
+        except TypeError:
             return 'Ni podatka'
 
     def v_slovar(self):
@@ -168,7 +185,7 @@ class Nakup:
             'kratica_del': self.kratica_del,
             'kolicina_delna': self.kolicina_delna,
             'kupna_cena': self.kupna_cena,
-            'cas_nakupa': dt.datetime.isoformat(self.cas_nakupa),
+            'cas_nakupa': dt.datetime.isoformat(self.cas_nakupa) if self.cas_nakupa else None,
             'stop': self.stop,
             'limit': self.limit,
             'razlika_delna': self.razlika_delna,
@@ -180,7 +197,8 @@ class Nakup:
             slovar['kratica_del'],
             slovar['kolicina_delna'],
             slovar['kupna_cena'],
-            dt.datetime.fromisoformat(slovar['cas_nakupa']),
+            dt.datetime.fromisoformat(
+                slovar['cas_nakupa']) if slovar['cas_nakupa'] else None,
             slovar['stop'],
             slovar['limit'],
         )

@@ -1,5 +1,4 @@
 % rebase("base.html")
-<!--Main container-->
 <nav class="nav gap-3 justify-content-center">
     <div>
         <form method="POST" action="/zamenjaj-trenutno-valuto/">
@@ -51,6 +50,9 @@
         
     </div>
     <div>
+        <a class="btn btn-light" href="/pokazi-graf/" role="button">Graf</a>
+    </div>
+    <div>
         <a class="btn btn-success" href="/dodaj-valuto/" role="button">Dodaj valuto</a>
     </div>
 </nav>
@@ -70,34 +72,33 @@
                         </span>
                         <input class="form-control" type="text" name="kolicina_delna" placeholder="Količina">
                     </div>
-                     
                 </td>
                 <td>
+                    Trenutna cena: {{valuta.trenutna_cena}}
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="bi bi-cash"></i>
                         </span>
                         <input class="form-control" type="text" name="kupna_cena" placeholder="Cena">
                     </div>
-                    Trenutna cena: {{valuta.trenutna_cena}}
                 </td>
                 <td>
+                    Format: yyyy-mm-dd hh:mm(:ss)
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="bi bi-clock"></i>
                         </span>
-                        <input class="form-control" type="text" name="cas_nakupa" placeholder="Čas nakupa">
+                        <input class="form-control" type="datetime" name="cas_nakupa" placeholder="Čas nakupa">
                     </div>
-                     
                 </td>
                 <td>
+                    * Ni potrebno vpisati
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="bi bi-slash-lg"></i>
                         </span>
                         <input class="form-control" type="text" name="stop" placeholder="Stop*">
                     </div>
-                    * Ni potrebno vpisati
                 </td>
                 <td>
                     <div class="input-group">
@@ -110,15 +111,31 @@
                 </td>
                 <td>
                     <button class="btn btn-outline-success" type="submit">Dodaj</button>
-                     
                 </td>
             </form>
         </tr>
     </thead>
     <tbody>
+        % if len(kupljeno) > 0:
+        <tr style="background-color: azure;">
+            <td>Čas nakupa:</td>
+            <td>Količina:</td>
+            <td>Kupna cena:</td>
+            <td>Stop:</td>
+            <td>Limit:</td>
+            <td>Razlika:</td>
+            <td>Odstrani:</td>
+        </tr>
+        % end
         % for indeks, nakup in enumerate(kupljeno):
         <tr>
-            <td>{{ nakup.cas_nakupa }}</td>
+            <td>
+                % if nakup.cas_nakupa:
+                {{ nakup.cas_nakupa }}
+                % else:
+                Ni podatka 
+                % end               
+            </td>
             <td>{{ nakup.kolicina_delna }}</td>
             <td>{{ nakup.kupna_cena }}</td>
             <td>{{ nakup.stop }}</td>
