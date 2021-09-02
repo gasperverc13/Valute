@@ -46,8 +46,8 @@
                 </div>
             </div>
         </div>
-        % end    
-        
+        % end
+
     </div>
     <div>
         <a class="btn btn-light" href="/pokazi-graf/" role="button">Graf</a>
@@ -61,7 +61,7 @@
 % valuta = trenutna_valuta
 <table class="table table-hover table-striped">
     <thead>
-        
+
         <tr>
             <form method="POST" action="/dodaj/">
                 <td></td>
@@ -107,7 +107,7 @@
                         </span>
                         <input class="form-control" type="text" name="limit" placeholder="Limit*">
                     </div>
-                     
+
                 </td>
                 <td>
                     <button class="btn btn-outline-success" type="submit">Dodaj</button>
@@ -133,8 +133,8 @@
                 % if nakup.cas_nakupa:
                 {{ nakup.cas_nakupa }}
                 % else:
-                Ni podatka 
-                % end               
+                Ni podatka
+                % end
             </td>
             <td>{{ nakup.kolicina_delna }}</td>
             <td>{{ nakup.kupna_cena }}</td>

@@ -22,6 +22,9 @@
             <input class="form-control" name="interval" type="text" placeholder="Interval"
                 value="{{polja.get('interval')}}">
         </div>
+        % if 'interval' in napake:
+        <p class="text text-danger">{{ napake['interval'] }}</p>
+        % end
         <!--tukaj še enkrat dodaj ko delaš funkcijo za preverjanje napak-->
     </div>
     <div class="col-auto">

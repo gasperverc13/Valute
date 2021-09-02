@@ -11,7 +11,9 @@
             <input class="form-control" name="kratica" type="text" placeholder="Kratica"
                 value="{{polja.get('kratica')}}" autocapitalize="characters" autofocus>
         </div>
-        <!--tukaj še enkrat dodaj ko delaš funkcijo za preverjanje napak-->
+        % if 'kratica' in napake:
+        <p class="text text-danger">{{ napake['kratica'] }}</p>
+        % end
     </div>
     <div class="col-auto">
         <button class="btn btn-light" type="submit">Dodaj</button>

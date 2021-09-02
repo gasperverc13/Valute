@@ -10,6 +10,9 @@
                         </span>
                         <input class="form-control" type="text" name="kratica" placeholder="Kratica">
                     </div>
+                    % if 'kratica' in napake:
+                    <p class="text text-danger">{{ napake['kratica'] }}</p>
+                    % end
                 </td>
                 <td>
                     <button class="btn btn-outline-success" type="submit">Dodaj</button>
