@@ -6,13 +6,14 @@
                 % for indeks, valuta in enumerate(moje_valute):
                 % if valuta == trenutna_valuta:
                 <li class="nav-item">
-                    <button class="nav-link active" name="indeks" value="{{indeks}}">
+                    <button class="nav-link active" name="indeks" value="{{indeks}}" disabled>
                         {{valuta.kratica}}
                     </button>
                 </li>
                 % else:
                 <li class="nav-item">
-                    <button class="nav-link" name="indeks" value="{{indeks}}">
+                    <button class="nav-link" name="indeks" value="{{indeks}}" data-bs-toggle="tooltip"
+                        data-bs-placement="bottom" title="Zamenjaj valuto">
                         {{valuta.kratica}}
                     </button>
                 </li>
@@ -23,7 +24,8 @@
     </div>
     <div>
         % if len(moje_valute) > 0:
-        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#prodaj_modal">
+        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#prodaj_modal"
+            data-bs-toggle="tooltip" data-bs-placement="bottom" title="Odstrani valuto">
             <i class="bi bi-dash-circle"></i>
         </button>
         <div class="modal fade" id="prodaj_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -70,10 +72,8 @@
                         <span class="input-group-text bg-primary">
                             <i class="bi bi-arrow-up" style="color: white;"></i>
                         </span>
-                        <input class="form-control" type="text" name="kolicina_delna" placeholder="Količina"
-                            polja="{{polja.get('kolicina_delna')}}">
+                        <input class="form-control" type="text" name="kolicina_delna" placeholder="Količina">
                     </div>
-                    <!-- poglej, ali je treba dodati podatek "polja"; enako na strani 'zacetna'-->
                 </td>
                 <td>
                     Trenutna cena: {{valuta.trenutna_cena}}
@@ -81,18 +81,16 @@
                         <span class="input-group-text bg-primary">
                             <i class="bi bi-cash" style="color: white;"></i>
                         </span>
-                        <input class="form-control" type="text" name="kupna_cena" placeholder="Cena"
-                            polja="{{polja.get('kupna_cena')}}">
+                        <input class="form-control" type="text" name="kupna_cena" placeholder="Cena">
                     </div>
                 </td>
                 <td>
-                    Format: yyyy-mm-dd hh:mm(:ss)
-                    <div class="input-group">
+                    <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        title="Format: YYYY-MM-DD hh:mm(:ss)">
                         <span class="input-group-text bg-primary">
                             <i class="bi bi-clock" style="color: white;"></i>
                         </span>
-                        <input class="form-control" type="datetime" name="cas_nakupa" placeholder="Čas nakupa"
-                            polja="{{polja.get('cas_nakupa')}}">
+                        <input class="form-control" type="datetime" name="cas_nakupa" placeholder="Čas nakupa">
                     </div>
                     % if 'cas_nakupa' in napake:
                     <p class="text text-danger">{{ napake['cas_nakupa'] }}</p>
@@ -104,8 +102,7 @@
                         <span class="input-group-text bg-primary">
                             <i class="bi bi-slash-lg" style="color: white;"></i>
                         </span>
-                        <input class="form-control" type="text" name="stop" placeholder="Stop*"
-                            polja="{{polja.get('stop')}}">
+                        <input class="form-control" type="text" name="stop" placeholder="Stop*">
                     </div>
                 </td>
                 <td>
@@ -113,8 +110,7 @@
                         <span class="input-group-text bg-primary">
                             <i class="bi bi-chevron-double-right" style="color: white;"></i>
                         </span>
-                        <input class="form-control" type="text" name="limit" placeholder="Limit*"
-                            polja="{{polja.get('limit')}}">
+                        <input class="form-control" type="text" name="limit" placeholder="Limit*">
                     </div>
 
                 </td>
@@ -122,10 +118,11 @@
                     <button class="btn btn-outline-success" type="submit" data-bs-toggle="tooltip"
                         data-bs-placement="bottom" title="Dodaj nakup">Dodaj</button>
                 </td>
-                % if 'nakup' in napake:
-                <p class="text text-danger">{{ napake['nakup'] }}</p>
-                % end
+
             </form>
+            % if 'nakup' in napake:
+            <p class="text text-danger">{{ napake['nakup'] }}</p>
+            % end
         </tr>
     </thead>
     <tbody>
