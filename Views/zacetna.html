@@ -4,24 +4,25 @@
         <tr>
             <form method="POST" action="/dodaj-valuto/">
                 <td>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-currency-dollar"></i>
+                    <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="right"
+                        title="Format vnosa: ABC/DEF">
+                        <span class="input-group-text bg-primary">
+                            <i class="bi bi-currency-dollar" style="color: white;"></i>
                         </span>
-                        <input class="form-control" type="text" name="kratica" placeholder="Kratica">
+                        <input class="form-control" type="text" name="kratica" placeholder="Kratica"
+                            polja="{{polja.get('kratica')}}">
+                        <button class="btn btn-outline-success" type="submit">Dodaj</button>
                     </div>
+
                     % if 'kratica' in napake:
                     <p class="text text-danger">{{ napake['kratica'] }}</p>
                     % end
-                </td>
-                <td>
-                    <button class="btn btn-outline-success" type="submit">Dodaj</button>
                 </td>
             </form>
         </tr>
     </thead>
     <tbody>
-        <tr style="background-color: azure;">
+        <tr style="background-color: #0d6efd; color: white;">
             <td>Valuta</td>
             <td>Skupna količina</td>
             <td>Trenutna cena</td>
@@ -33,7 +34,8 @@
             <td>
                 <div class="justify-content-left">
                     <form method="POST" action="/zamenjaj-trenutno-valuto/">
-                        <button type="submit" class="btn btn-outline-primary" name="indeks" value="{{indeks}}">
+                        <button type="submit" class="btn btn-outline-primary" name="indeks" value="{{indeks}}"
+                            data-bs-toggle="tooltip" data-bs-placement="right" title="Zamenjaj valuto">
                             {{valuta.kratica}}
                         </button>
                     </form>
@@ -45,7 +47,8 @@
             <td>
                 <div>
                     <form method="POST" action="/prodaj-valuto/">
-                        <button class="btn btn-outline-danger" name="indeks" value="{{indeks}}" type="submit">
+                        <button class="btn btn-outline-danger" name="indeks" value="{{indeks}}" type="submit"
+                            data-bs-toggle="tooltip" data-bs-placement="right" title="Odstrani valuto">
                             <i class="bi bi-dash-circle"></i>
                         </button>
                     </form>
