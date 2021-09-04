@@ -66,7 +66,16 @@
 
         <tr>
             <form method="POST" action="/dodaj/">
-                <td></td>
+                <td>
+                    % if 'nakup' in napake:
+                    <div class="text text-danger">
+                        {{ napake['nakup'] }}
+                    </div>
+                    % end
+                    % if 'cas_nakupa' in napake:
+                    <div class="text text-danger">{{ napake['cas_nakupa'] }}</div>
+                    % end
+                </td>
                 <td>
                     <div class="input-group">
                         <span class="input-group-text bg-primary">
@@ -92,9 +101,7 @@
                         </span>
                         <input class="form-control" type="datetime" name="cas_nakupa" placeholder="Čas nakupa">
                     </div>
-                    % if 'cas_nakupa' in napake:
-                    <p class="text text-danger">{{ napake['cas_nakupa'] }}</p>
-                    % end
+                    
                 </td>
                 <td>
                     * Ni potrebno vpisati
@@ -120,9 +127,7 @@
                 </td>
 
             </form>
-            % if 'nakup' in napake:
-            <p class="text text-danger">{{ napake['nakup'] }}</p>
-            % end
+            
         </tr>
     </thead>
     <tbody>
