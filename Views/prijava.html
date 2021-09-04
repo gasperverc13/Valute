@@ -6,7 +6,7 @@
                 <i class="bi bi-person-circle"></i>
             </span>
             <input class="form-control" name="uporabnisko_ime" type="text" placeholder="Uporabniško ime"
-                value="{{polja.get('uporabnisko_ime', '')}}" autofocus>
+                value="{{polja.get('uporabnisko_ime')}}" autofocus>
         </div>
         % if 'uporabnisko_ime' in napake:
         <p class="text text-danger">{{ napake['uporabnisko_ime'] }}</p>

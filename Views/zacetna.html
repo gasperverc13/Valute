@@ -13,7 +13,6 @@
                             polja="{{polja.get('kratica')}}">
                         <button class="btn btn-outline-success" type="submit">Dodaj</button>
                     </div>
-
                     % if 'kratica' in napake:
                     <p class="text text-danger">{{ napake['kratica'] }}</p>
                     % end
@@ -43,7 +42,23 @@
             </td>
             <td>{{ valuta.skupna_kolicina }}</td>
             <td>{{ valuta.trenutna_cena }}</td>
-            <td>{{ valuta.skupna_razlika }}</td>
+            <td>
+                % if type(valuta.skupna_razlika) != str:
+                % if valuta.skupna_razlika < 0: 
+                <span class="bg-danger" style="color: white;">
+                    {{ valuta.skupna_razlika }}
+                </span>
+                % elif valuta.skupna_razlika > 0:
+                <span class="bg-success" style="color: white;">
+                    {{ valuta.skupna_razlika }}
+                </span>
+                % else:
+                {{ valuta.skupna_razlika }}
+                % end
+                % else:
+                {{ valuta.skupna_razlika }}
+                % end
+            </td>
             <td>
                 <div>
                     <form method="POST" action="/prodaj-valuto/">

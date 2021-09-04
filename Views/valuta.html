@@ -49,7 +49,6 @@
             </div>
         </div>
         % end
-
     </div>
     <div>
         <a class="btn btn-light" href="/pokazi-graf/" role="button">Graf</a>
@@ -63,7 +62,6 @@
 % valuta = trenutna_valuta
 <table class="table table-hover table-striped">
     <thead>
-
         <tr>
             <form method="POST" action="/dodaj/">
                 <td>
@@ -101,7 +99,6 @@
                         </span>
                         <input class="form-control" type="datetime" name="cas_nakupa" placeholder="Čas nakupa">
                     </div>
-                    
                 </td>
                 <td>
                     * Ni potrebno vpisati
@@ -119,15 +116,12 @@
                         </span>
                         <input class="form-control" type="text" name="limit" placeholder="Limit*">
                     </div>
-
                 </td>
                 <td>
                     <button class="btn btn-outline-success" type="submit" data-bs-toggle="tooltip"
                         data-bs-placement="bottom" title="Dodaj nakup">Dodaj</button>
                 </td>
-
             </form>
-            
         </tr>
     </thead>
     <tbody>
@@ -148,7 +142,7 @@
                 % if nakup.cas_nakupa:
                 {{ nakup.cas_nakupa }}
                 % else:
-                Ni podatka
+                /
                 % end
             </td>
             <td>{{ nakup.kolicina_delna }}</td>
@@ -157,17 +151,33 @@
                 % if nakup.stop:
                 {{ nakup.stop }}
                 % else:
-                Ni podatka
+                /
                 % end
             </td>
             <td>
                 % if nakup.limit:
                 {{ nakup.limit }}
                 % else:
-                Ni podatka
+                /
                 % end
             </td>
-            <td>{{ nakup.razlika_delna }}</td>
+            <td>
+                % if type(nakup.razlika_delna) != str:
+                % if nakup.razlika_delna < 0:
+                <span class="bg-danger" style="color: white;">
+                    {{ nakup.razlika_delna }}
+                </span>
+                % elif nakup.razlika_delna > 0:
+                <span class="bg-success" style="color: white;"> 
+                    {{ nakup.razlika_delna }}
+                </span>
+                % else:
+                {{ nakup.razlika_delna }}
+                % end
+                % else:
+                {{ nakup.razlika_delna }}
+                % end
+            </td>
             <td>
                 <form method="POST" action="/prodaj/">
                     <button type="submit" class="btn btn-outline-danger" name="indeks" value="{{indeks}}"

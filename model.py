@@ -10,13 +10,9 @@ class Portfelj:
         self.trenutna_valuta = None
 
     def dodaj_valuto(self, valuta):
-        # if valuta not in self.moje_valute:
         self.moje_valute.append(valuta)
         if not self.trenutna_valuta:
             self.trenutna_valuta = valuta
-
-    # def kolicina_valute(self, kolicina=None):
-    #    self.kolicina = kolicina
 
     def prodaj_vse(self, valuta):
         self.moje_valute.remove(valuta)
@@ -30,18 +26,32 @@ class Portfelj:
     def prodaj_del(self, nakup):
         self.trenutna_valuta.prodaj_del(nakup)
 
-    # def total(self):
-    #    return sum([valuta.skupna_vrednost() for valuta in self.moje_valute])
-
-    def zgodovina(self, zacetek, konec, interval):
+    def graf(self, zacetek, konec, interval):
         kratica = self.trenutna_valuta.kratica
-        if kratica[:3] == 'USD':
+        if kratica[:3] == ('USD' or 'usd'):
             kratica_x = kratica[-3:]
         else:
             kratica_x = ''.join(kratica.split('/'))
+        kratica_x = f'{kratica_x}=X'
+        if zacetek is not None:
+            if konec is not None:
+                if konec < zacetek:
+                    t = konec
+                    konec = zacetek
+                    zacetek = t
+            elif zacetek > dt.date.today():
+                zacetek = dt.date.today()
+        try:
+            yf.Ticker(kratica_x).history(start=zacetek)
+        except OverflowError:
+            zacetek = None
+        try:
+            yf.Ticker(kratica_x).history(start=zacetek, end=konec)
+        except OverflowError:
+            konec = None
         graf = go.Figure()
         podatki = yf.download(
-            tickers=f'{kratica_x}=X', start=zacetek, end=konec, interval=interval)
+            tickers=kratica_x, start=zacetek, end=konec, interval=interval)
         graf.add_trace(go.Candlestick(
             x=podatki.index, open=podatki['Open'], high=podatki['High'], low=podatki['Low'], close=podatki['Close']))
         graf.update_layout(title=kratica)
@@ -85,7 +95,37 @@ class Portfelj:
             if valuta.kratica == kratica:
                 napake['kratica'] = 'Ta kratica je že vpisana.'
         return napake
-    # ta del najverjetneje ne bo uporaben
+
+    def preveri_podatke_nakupa(self, kolicina_delna, kupna_cena, stop, limit):
+        napake = {}
+        for podatek in [kolicina_delna, kupna_cena, stop, limit]:
+            try:
+                float(podatek)
+                if float(podatek) == 0:
+                    napake['nakup'] = 'Vrednosti ne smejo biti 0.'
+                    break
+            except ValueError:
+                napake['nakup'] = 'Vnešeni podatki niso ustrezni.'
+                break
+            except TypeError:
+                continue
+        return napake
+
+    def preveri_podatke_grafa(self, interval):
+        kratica = self.trenutna_valuta.kratica
+        napake = {}
+        if interval not in ['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo']:
+            napake['graf'] = 'Vnesite ustrezen interval.'
+            return napake
+        if kratica[:3] == ('USD' or 'usd'):
+            kratica_x = kratica[-3:]
+        else:
+            kratica_x = ''.join(kratica.split('/'))
+        kratica_x = f'{kratica_x}=X'
+        poskus = yf.Ticker(kratica_x).history(start='2021-01-01')
+        if len(poskus) == 0:
+            napake['graf'] = 'Grafa za ta par ni mogoče prikazati.'
+        return napake
 
 
 class Valuta:
@@ -93,47 +133,48 @@ class Valuta:
         self.kratica = kratica
         self.kupljeno = []
         self.trenutna_cena = Valuta.trenutna_cena_valute(self.kratica)
-        self.skupna_razlika = Valuta.razlika(self.kupljeno, self.trenutna_cena)
-        self.skupna_kolicina = Valuta.kolicina_skupna(self.kupljeno)
+        self.skupna_razlika = 0
+        self.skupna_kolicina = 0
 
     def dodaj_nakup(self, nakup):
         self.kupljeno.append(nakup)
+        self.kolicina_skupna(nakup, 'dodaj')
+        self.razlika(nakup, 'dodaj')
 
     def prodaj_del(self, nakup):
         self.kupljeno.remove(nakup)
+        self.kolicina_skupna(nakup, 'prodaj')
+        self.razlika(nakup, 'prodaj')
 
-    # def skupna_vrednost(self):
-    #    return (sum(self.kupljeno[i] * self.vrednosti[i] for i in range(
-    #        len(self.kupljeno))) - Valuta.trenutna_cena_valute(self.kratica) * sum(self.kupljeno))
+    def kolicina_skupna(self, nakup, naredi):
+        if naredi == 'dodaj':
+            self.skupna_kolicina += nakup.kolicina_delna
+        elif naredi == 'prodaj':
+            self.skupna_kolicina -= nakup.kolicina_delna
 
-    @staticmethod
-    def kolicina_skupna(kupljeno):
-        skupna = 0
-        for nakup in kupljeno:
-            kolicina = nakup.kolicina_delna
-            skupna += kolicina
-        return skupna
-
-    @staticmethod
-    def razlika(kupljeno, trenutna_cena):
-        skupna = 0
-        for nakup in kupljeno:
-            skupna += nakup.kupna_cena * nakup.kolicina_delna
+    def razlika(self, nakup, naredi):
+        trenutna_cena = self.trenutna_cena
         if type(trenutna_cena) == float:
-            return float(f'{Valuta.kolicina_skupna(kupljeno) * trenutna_cena - skupna:.4f}')
+            if naredi == 'dodaj':
+                self.skupna_razlika += float(
+                    f'{(trenutna_cena - nakup.kupna_cena) * nakup.kolicina_delna:.5f}')
+            elif naredi == 'prodaj':
+                self.skupna_razlika -= float(
+                    f'{(trenutna_cena - nakup.kupna_cena) * nakup.kolicina_delna:.5f}')
         else:
-            return 'Ni podatka'
-    
+            self.skupna_razlika = 'Ni podatka'
+
     @staticmethod
     def trenutna_cena_valute(kratica):
         if kratica[:3] == ('USD' or 'usd'):
             kratica_x = kratica[-3:]
         else:
             kratica_x = ''.join(kratica.split('/'))
-        valuta = yf.Ticker(f'{kratica_x}=X')
+        kratica_x = f'{kratica_x}=X'
+        valuta = yf.Ticker(kratica_x)
         try:
             cena = valuta.info['regularMarketPrice']
-            return float(f'{cena:.4f}')
+            return float(f'{cena:.5f}')
         except TypeError:
             return 'Ni podatka'
 
@@ -152,24 +193,26 @@ class Valuta:
         valuta.kupljeno = [
             Nakup.iz_slovarja(sl_kupljeno) for sl_kupljeno in slovar['kupljeno']
         ]
-        # valuta.skupna_kolicina =
+        valuta.skupna_kolicina = slovar['skupna_kolicina']
+        valuta.skupna_razlika = slovar['skupna_razlika']
         return valuta
 
 
 class Nakup:
     def __init__(self, kratica_del, kolicina_delna, kupna_cena, cas_nakupa, stop, limit):
         self.kratica_del = kratica_del
-        self.kolicina_delna = int(kolicina_delna)
+        self.kolicina_delna = float(kolicina_delna)
         self.kupna_cena = float(kupna_cena)
         self.cas_nakupa = cas_nakupa
-        self.stop = stop
-        self.limit = limit
-        self.razlika_delna = Nakup.razlika_delna(self.kratica_del, self.kupna_cena, self.kolicina_delna)
+        self.stop = float(stop) if stop is not None else None
+        self.limit = float(limit) if limit is not None else None
+        self.razlika_delna = Nakup.razlika_delna(
+            self.kratica_del, self.kupna_cena, self.kolicina_delna)
 
     @staticmethod
     def razlika_delna(kratica_del, kupna_cena, kolicina_delna):
         if type(Valuta.trenutna_cena_valute(kratica_del)) == float:
-            return float(f'{(Valuta.trenutna_cena_valute(kratica_del) - kupna_cena) * kolicina_delna:.4f}')
+            return float(f'{(Valuta.trenutna_cena_valute(kratica_del) - kupna_cena) * kolicina_delna:.5f}')
         else:
             return 'Ni podatka'
 

@@ -25,7 +25,6 @@ def zacetna_stran():
             'zacetna.html',
             moje_valute=portfelj.moje_valute,
             uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
-            kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],
             napake={},
             polja={},
         )
@@ -43,7 +42,6 @@ def valuta():
         uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'),
         kupljeno=portfelj.trenutna_valuta.kupljeno if portfelj.trenutna_valuta else [],
         napake={},
-        polja={},
     )
 
 
@@ -57,10 +55,12 @@ def registracija_post():
     uporabnisko_ime = bottle.request.forms.getunicode('uporabnisko_ime')
     if not uporabnisko_ime:
         napake = {'uporabnisko_ime': 'Vnesi uporabniško ime!'}
-        return bottle.template("registracija.html", napake=napake, polja={'uporabnisko_ime': uporabnisko_ime}, uporabnisko_ime=uporabnisko_ime)
+        return bottle.template("registracija.html", napake=napake, polja={'uporabnisko_ime': uporabnisko_ime},
+                               uporabnisko_ime=uporabnisko_ime)
     elif os.path.exists(uporabnisko_ime):
         napake = {'uporabnisko_ime': 'Uporabniško ime že obstaja.'}
-        return bottle.template('registracija.html', napake=napake, polja={'uporabnisko_ime': uporabnisko_ime}, uporabnisko_ime=None)
+        return bottle.template('registracija.html', napake=napake, polja={'uporabnisko_ime': uporabnisko_ime},
+                               uporabnisko_ime=None)
     else:
         bottle.response.set_cookie(
             'uporabnisko_ime', uporabnisko_ime, path="/")
@@ -78,10 +78,12 @@ def prijava_post():
     uporabnisko_ime = bottle.request.forms.getunicode('uporabnisko_ime')
     if not uporabnisko_ime:
         napake = {'uporabnisko_ime': 'Vnesi uporabniško ime!'}
-        return bottle.template("prijava.html", napake=napake, polja={'uporabnisko_ime': uporabnisko_ime}, uporabnisko_ime=uporabnisko_ime)
+        return bottle.template("prijava.html", napake=napake, polja={'uporabnisko_ime': uporabnisko_ime},
+                               uporabnisko_ime=uporabnisko_ime)
     elif not os.path.exists(uporabnisko_ime):
         napake = {'uporabnisko_ime': 'Uporabniško ime ne obstaja.'}
-        return bottle.template('prijava.html', napake=napake, polja={'uporabnisko_ime': uporabnisko_ime}, uporabnisko_ime=uporabnisko_ime)
+        return bottle.template('prijava.html', napake=napake, polja={'uporabnisko_ime': uporabnisko_ime},
+                               uporabnisko_ime=uporabnisko_ime)
     else:
         bottle.response.set_cookie(
             'uporabnisko_ime', uporabnisko_ime, path="/")
@@ -116,11 +118,9 @@ def dodaj_nakup():
             cas_nakupa = dt.datetime.fromisoformat(
                 bottle.request.forms['cas_nakupa'])
         except ValueError:
-            napake['cas_nakupa'] = 'Čas nakupa ni v pravilno vpisan.'
+            napake['cas_nakupa'] = 'Čas nakupa ni pravilno vpisan.'
     else:
         cas_nakupa = None
-    #polja = {'kolicina_delna': kolicina_delna, 'kupna_cena': kupna_cena,
-    #         'stop': stop, 'limit': limit, 'cas_nakupa': cas_nakupa}
     if napake:
         return bottle.template(
             'valuta.html',
@@ -141,9 +141,8 @@ def dodaj_nakup():
 @bottle.get("/dodaj-valuto/")
 def dodaj_valuto_get():
     uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
-    return bottle.template('dodaj_valuto.html', napake={}, polja={}, uporabnisko_ime=uporabnisko_ime)
-# get prikaže stran, post prebere vpisane podatke
-# napake so napake v vnosu, polja so prazna oz. izpolnjena polja v obrazcu
+    return bottle.template('dodaj_valuto.html', napake={}, polja={},
+                           uporabnisko_ime=uporabnisko_ime)
 
 
 @bottle.post("/dodaj-valuto/")
@@ -184,7 +183,8 @@ def prodaj_trenutno_valuto():
 @bottle.get("/pokazi-graf/")
 def pokazi_graf_get():
     uporabnisko_ime = bottle.request.get_cookie('uporabnisko_ime')
-    return bottle.template('pokazi_graf.html', napake={}, polja={}, uporabnisko_ime=uporabnisko_ime)
+    return bottle.template('pokazi_graf.html', napake={}, polja={},
+                           uporabnisko_ime=uporabnisko_ime)
 
 
 @bottle.post("/pokazi-graf/")
@@ -193,7 +193,7 @@ def pokazi_graf():
     if bottle.request.forms['zacetek']:
         zacetek = dt.date.fromisoformat(bottle.request.forms['zacetek'])
     else:
-        zacetek = '2021-01-01'
+        zacetek = None
     if bottle.request.forms['konec']:
         konec = dt.date.fromisoformat(bottle.request.forms['konec'])
     else:
@@ -202,17 +202,15 @@ def pokazi_graf():
         interval = bottle.request.forms['interval']
     else:
         interval = '1d'
-    if interval in ['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo']:    
-        try:
-            portfelj.graf(zacetek, konec, interval)
-            shrani_portfelj(portfelj)
-            bottle.redirect("/valuta/")
-        except OverflowError:
-            napake = {'zacetek': 'Podatki za to obdobje niso na voljo'}
-            return bottle.template('pokazi_graf.html', napake=napake, polja={'zacetek': zacetek}, uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'))
+    napake = portfelj.preveri_podatke_grafa(interval)
+    if napake:
+        return bottle.template('pokazi_graf.html', napake=napake, polja={'zacetek': zacetek, 'konec': konec, 'interval': interval},
+                               uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'))
     else:
-        napake = {'interval': 'Vnesite ustrezen interval.'}
-        return bottle.template('pokazi_graf.html', napake=napake, polja={'interval': interval}, uporabnisko_ime=bottle.request.get_cookie('uporabnisko_ime'))
+        portfelj.graf(zacetek, konec, interval)
+        shrani_portfelj(portfelj)
+        bottle.redirect("/pokazi-graf/")
+
 
 @bottle.post("/prodaj-valuto/")
 def prodaj_valuto():
@@ -254,4 +252,4 @@ def error_404(error):
     return 'Ta stran ne obstaja!'
 
 
-bottle.run(reloader=True, debug=True)
+bottle.run(reloader=True)

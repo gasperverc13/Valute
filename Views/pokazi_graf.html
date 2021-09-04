@@ -1,33 +1,35 @@
 % rebase("base.html")
-<form method="POST" class="row g-3">
+<form method="POST" class="row g-2">
     <div class="col-auto">
-        <div class="input-group">
+        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Začetek">
             <span class="input-group-text">
                 <i class="bi bi-calendar-date"></i>
             </span>
             <input class="form-control" name="zacetek" type="date" placeholder="Začetek"
                 value="{{polja.get('zacetek')}}">
         </div>
-        <div class="input-group">
+        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Konec">
             <span class="input-group-text">
                 <i class="bi bi-calendar-date-fill"></i>
             </span>
             <input class="form-control" name="konec" type="date" placeholder="Konec" value="{{polja.get('konec')}}">
         </div>
-        <div class="input-group">
+        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="Interval">
             <span class="input-group-text">
                 <i class="bi bi-info-circle"></i>
             </span>
             <input class="form-control" name="interval" type="text" placeholder="Interval"
                 value="{{polja.get('interval')}}">
         </div>
-        % if 'interval' in napake:
-        <p class="text text-danger">{{ napake['interval'] }}</p>
+        % if 'graf' in napake:
+        <p class="text text-danger">{{ napake['graf'] }}</p>
         % end
-        <p>Začetek: privzeta vrednost 2021-01-01, najmanjša vrednost 1900-01-01
+        <p>Začetek: najmanjša vrednost 1900-01-01, privzeta je prva zabeležena za par
         <p>Konec: privzeta vrednost "danes"</p>
         <p>Interval: Privzeta vrednost 1d. Izbirajte med 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo.</p>
-
     </div>
     <div class="col-auto">
         <button class="btn btn-light" type="submit">Pokaži</button>
