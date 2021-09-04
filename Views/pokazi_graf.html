@@ -1,23 +1,20 @@
 % rebase("base.html")
 <form method="POST" class="row g-2">
     <div class="col-auto">
-        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom"
-        title="Začetek">
+        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Začetek">
             <span class="input-group-text">
                 <i class="bi bi-calendar-date"></i>
             </span>
             <input class="form-control" name="zacetek" type="date" placeholder="Začetek"
                 value="{{polja.get('zacetek')}}">
         </div>
-        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom"
-        title="Konec">
+        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Konec">
             <span class="input-group-text">
                 <i class="bi bi-calendar-date-fill"></i>
             </span>
             <input class="form-control" name="konec" type="date" placeholder="Konec" value="{{polja.get('konec')}}">
         </div>
-        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom"
-        title="Interval">
+        <div class="input-group" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Interval">
             <span class="input-group-text">
                 <i class="bi bi-info-circle"></i>
             </span>
