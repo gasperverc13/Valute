@@ -161,7 +161,7 @@ def dodaj_valuto_post():
             polja=polja
         )
     else:
-        valuta = model.Valuta(kratica)
+        valuta = model.Valuta(kratica.upper())
         portfelj.dodaj_valuto(valuta)
         portfelj.trenutna_valuta = valuta
         shrani_portfelj(portfelj)

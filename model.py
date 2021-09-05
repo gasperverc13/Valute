@@ -89,10 +89,11 @@ class Portfelj:
         napake = {}
         if not kratica:
             napake['kratica'] = 'Vpišite kratico.'
-        elif len(kratica) != 7 or '/' not in kratica:
+        elif len(kratica) != 7 or '/' != kratica[3]:
             napake['kratica'] = 'Napačen format vnosa.'
         for valuta in self.moje_valute:
-            if valuta.kratica == kratica:
+            obratno = '/'.join([kratica[-3:].upper(), kratica[:3].upper()])
+            if (valuta.kratica == kratica.upper()) or (valuta.kratica == obratno):
                 napake['kratica'] = 'Ta kratica je že vpisana.'
         return napake
 
@@ -117,7 +118,7 @@ class Portfelj:
         if interval not in ['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo']:
             napake['graf'] = 'Vnesite ustrezen interval.'
             return napake
-        if kratica[:3] == ('USD' or 'usd'):
+        if kratica[:3] == 'USD':
             kratica_x = kratica[-3:]
         else:
             kratica_x = ''.join(kratica.split('/'))
@@ -157,16 +158,16 @@ class Valuta:
         if type(trenutna_cena) == float:
             if naredi == 'dodaj':
                 self.skupna_razlika += float(
-                    f'{(trenutna_cena - nakup.kupna_cena) * nakup.kolicina_delna:.5f}')
+                    f'{(trenutna_cena - nakup.kupna_cena) * nakup.kolicina_delna:.4f}')
             elif naredi == 'prodaj':
                 self.skupna_razlika -= float(
-                    f'{(trenutna_cena - nakup.kupna_cena) * nakup.kolicina_delna:.5f}')
+                    f'{(trenutna_cena - nakup.kupna_cena) * nakup.kolicina_delna:.4f}')
         else:
             self.skupna_razlika = 'Ni podatka'
 
     @staticmethod
     def trenutna_cena_valute(kratica):
-        if kratica[:3] == ('USD' or 'usd'):
+        if kratica[:3] == 'USD':
             kratica_x = kratica[-3:]
         else:
             kratica_x = ''.join(kratica.split('/'))
@@ -174,9 +175,11 @@ class Valuta:
         valuta = yf.Ticker(kratica_x)
         try:
             cena = valuta.info['regularMarketPrice']
-            return float(f'{cena:.5f}')
+            return float(f'{cena:.4f}')
         except TypeError:
             return 'Ni podatka'
+        except TimeoutError:
+            return 'Trenutno ni podatka'
 
     def v_slovar(self):
         return {
@@ -212,7 +215,7 @@ class Nakup:
     @staticmethod
     def razlika_delna(kratica_del, kupna_cena, kolicina_delna):
         if type(Valuta.trenutna_cena_valute(kratica_del)) == float:
-            return float(f'{(Valuta.trenutna_cena_valute(kratica_del) - kupna_cena) * kolicina_delna:.5f}')
+            return float(f'{(Valuta.trenutna_cena_valute(kratica_del) - kupna_cena) * kolicina_delna:.4f}')
         else:
             return 'Ni podatka'
 
