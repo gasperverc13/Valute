@@ -11,9 +11,10 @@ Program omogoča delo več uporabnikov hkrati z uporabo piškotkov.
 
 ## Navodila
 
-Preden začnete uporabljati program, morate naložiti knjižnico `yfinance`. To lahko storite z ukazom `pip install yfinance`.  
-Program začne delovati z zagonom spletnega vmesnika. V terminalu se vam nato pokaže povezava <http://127.0.0.1:8080/>; na njej dostopate do uporabniškega vmesnika.  
+Preden začnete uporabljati program, morate naložiti knjižnico yfinance.  
+To lahko storite z ukazom `pip install yfinance`.  
+Program začne delovati z zagonom spletnega vmesnika, ki ga najdete v datoteki `spletni_vmesnik.py`. V terminalu se vam nato pokaže povezava <http://127.0.0.1:8080/>; na njej dostopate do uporabniškega vmesnika.  
 
 ### Opozorilo
 
-Podatki o trenutni ceni v programu niso vedno zanesljivi, saj jih Pythonova knjižnica `yfinance` pridobi z uporabo metode "web scraping".
+Podatki o trenutni ceni v programu niso vedno zanesljivi, saj jih Pythonova knjižnica yfinance pridobi z uporabo metode "web scraping".
